@@ -37,16 +37,6 @@
         <li>Indicate the extension you would like to help maintain</li>
     </ul>
 
-    <p>And after submitting the form:</p>
-    <ul>
-        <li>
-            If approved, you will also need to
-            <a href="https://php.net/git-php.php">apply for a php.net account</a>
-            in order to commit the code to the php.net SVN repository. Select
-            'PECL Group' within that form when applying.
-        </li>
-    </ul>
-
     <p>
         <strong>Please confirm the reason for this PECL account request:</strong>
     </p>
