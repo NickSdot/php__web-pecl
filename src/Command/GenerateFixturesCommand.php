@@ -62,7 +62,7 @@ class GenerateFixturesCommand extends Command
     /**
      * Configure command.
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:generate-fixtures')
             ->setDescription('Insert fixtures in database.')
@@ -75,12 +75,12 @@ class GenerateFixturesCommand extends Command
      * be executed only in development environment as a safety measure to not
      * delete something important.
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($this->config->get('env') !== 'dev') {
             $output->writeln('This command can be executed only in development.');
 
-            return;
+            return self::SUCCESS;
         }
 
         $helper = $this->getHelper('question');
@@ -91,7 +91,7 @@ class GenerateFixturesCommand extends Command
 
         if (!$helper->ask($input, $output, $question)) {
             $output->writeln('Exiting...');
-            return;
+            return self::SUCCESS;
         }
 
         // Delete all current users and add new ones
@@ -112,5 +112,7 @@ class GenerateFixturesCommand extends Command
         $this->database->run('DELETE FROM maintains');
         $output->writeln('Adding new packages');
         $this->fixtures->insertPackages();
+
+        return self::SUCCESS;
     }
 }
