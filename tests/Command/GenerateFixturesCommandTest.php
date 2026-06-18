@@ -30,8 +30,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class GenerateFixturesCommandTest extends TestCase
 {
-    private $database;
-    private $generateFixturesCommand;
+    private Database $database;
+    private GenerateFixturesCommand $generateFixturesCommand;
 
     public function setUp(): void
     {
@@ -49,7 +49,7 @@ class GenerateFixturesCommandTest extends TestCase
         $this->generateFixturesCommand->setConfig($config);
 
         $application = new Application();
-        $application->add($this->generateFixturesCommand);
+        $application->addCommand($this->generateFixturesCommand);
 
         $command = $application->find('app:generate-fixtures');
         $commandTester = new CommandTester($command);
@@ -66,7 +66,7 @@ class GenerateFixturesCommandTest extends TestCase
         $this->generateFixturesCommand->setConfig($config);
 
         $application = new Application();
-        $application->add($this->generateFixturesCommand);
+        $application->addCommand($this->generateFixturesCommand);
 
         $command = $application->find('app:generate-fixtures');
         $commandTester = new CommandTester($command);
