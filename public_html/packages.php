@@ -242,7 +242,8 @@ if (!empty($catpid)) {
 
     foreach ($packages as $key => $pkg) {
         $extendedInfo['numReleases'] = $database->run('SELECT COUNT(*) AS count FROM releases WHERE package = ?', [$pkg['id']])->fetch()['count'];
-        $extendedInfo['status']      = $database->run('SELECT state FROM releases WHERE package = ? ORDER BY id DESC LIMIT 1', [$pkg['id']])->fetch()['state'];
+        $release = $database->run('SELECT state FROM releases WHERE package = ? ORDER BY id DESC LIMIT 1', [$pkg['id']])->fetch();
+        $extendedInfo['status']      = $release ? $release['state'] : null;
         $extendedInfo['license']     = $database->run('SELECT license FROM packages WHERE id = ? ORDER BY id DESC LIMIT 1', [$pkg['id']])->fetch()['license'];
 
         // Make status coloured
