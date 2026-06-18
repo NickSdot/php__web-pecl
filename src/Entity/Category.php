@@ -67,7 +67,8 @@ class Category
         // Get ID for the category. The current database schema doesn't have the
         // auto increment set yet for the id column.
         $sql = "SELECT id FROM categories ORDER by id DESC";
-        $id = $this->database->run($sql)->fetch()['id'];
+        $row = $this->database->run($sql)->fetch();
+        $id = $row ? $row['id'] : null;
         $id = !$id ? 1 : $id;
         $id++;
 

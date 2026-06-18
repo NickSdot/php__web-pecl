@@ -95,7 +95,8 @@ class Package
                     (id, name, package_type, category, license, summary, description, homepage, cvs_link, approved)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
 
-        $id = $this->database->run("SELECT id FROM packages ORDER by id DESC")->fetch()['id'];
+        $row = $this->database->run("SELECT id FROM packages ORDER by id DESC")->fetch();
+        $id = $row ? $row['id'] : null;
         $id = !$id ? 1 : $id + 1;
 
         $result = $this->database->run($sql, [$id, $name, $type, $category, $license, $summary, $description, $homepage, $cvs_link]);
