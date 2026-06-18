@@ -20,12 +20,14 @@
 
 use App\Repository\UserRepository;
 
+require_once __DIR__.'/../include/bootstrap.php';
+
 if (empty($user)) {
     $user = isset($_GET['handle']) ? $_GET['handle'] : null;
 }
 
 if (empty($user)) {
-    $user = basename($_SERVER['PATH_INFO']);
+    $user = basename($_SERVER['PATH_INFO'] ?? '');
 }
 
 $wishlistUrl = $container->get(UserRepository::class)->getWishlistByHandle($user);

@@ -48,7 +48,10 @@ class Breadcrumbs
             $nrows = count($results);
 
             $i = 0;
+            $lastCategory = null;
             foreach ($results as $row) {
+                $lastCategory = $row;
+
                 if (!$isLastLink && $i >= $nrows -1) {
                     break;
                 }
@@ -57,8 +60,8 @@ class Breadcrumbs
                 $i++;
             }
 
-            if (!$isLastLink) {
-                $html .= ' :: <b>'.$row['name'].'</b>';
+            if (!$isLastLink && $lastCategory !== null) {
+                $html .= ' :: <b>'.$lastCategory['name'].'</b>';
             }
         }
 

@@ -93,7 +93,8 @@ if (empty($catpid)) {
 
 // Main part of script
 if ($catpid) {
-    $catname = $database->run('SELECT name FROM categories WHERE id=:id', [':id' => $catpid])->fetch()['name'];
+    $category = $database->run('SELECT name FROM categories WHERE id=:id', [':id' => $catpid])->fetch();
+    $catname = $category ? $category['name'] : '';
     $categoryTitle = "Package Browser :: " . htmlspecialchars($catname, ENT_QUOTES);
 } else {
     $categoryTitle = 'Package Browser :: Top Level';
@@ -136,7 +137,7 @@ foreach ($statement->fetchAll() as $row) {
         if ($subcat['pid'] === $row['id']) {
             $subLinks[] = '<b><a href="'.$scriptName.'?catpid='.$subcat['id'].'&amp;catname='
                          . urlencode($subcat['name'])
-                         . '" title="'.htmlspecialchars($subcat['summary'], ENT_QUOTES).'">'
+                         . '" title="'.htmlspecialchars($subcat['summary'] ?? '', ENT_QUOTES).'">'
                          . $subcat['name'].'</a></b>';
             if (count($subLinks) >= $maxSubLinks) {
                 break;
@@ -147,7 +148,7 @@ foreach ($statement->fetchAll() as $row) {
     foreach ($subpkgs as $subpkg) {
         if ($subpkg['category'] === $row['id']) {
             $subLinks[] = '<a href="/package/'.$subpkg['name'].'" title="'
-                         . htmlspecialchars($subpkg['summary'], ENT_QUOTES).'">'.$subpkg['name'].'</a>';
+                         . htmlspecialchars($subpkg['summary'] ?? '', ENT_QUOTES).'">'.$subpkg['name'].'</a>';
             if (count($subLinks) >= $maxSubLinks) {
                 break;
             }
@@ -185,7 +186,7 @@ if (!empty($catpid)) {
                                        $scriptName,
                                        $subcat['id'],
                                        urlencode($subcat['name']),
-                                       htmlspecialchars($subcat['summary'], ENT_QUOTES),
+                                       htmlspecialchars($subcat['summary'] ?? '', ENT_QUOTES),
                                        $subcat['name']);
         }
 

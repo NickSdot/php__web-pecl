@@ -204,7 +204,7 @@ class Context
      */
     public function e($string)
     {
-        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars($string ?? '', ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -217,7 +217,7 @@ class Context
      */
     public function noHtml($string)
     {
-        return htmlentities($string, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        return htmlentities($string ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
     /**

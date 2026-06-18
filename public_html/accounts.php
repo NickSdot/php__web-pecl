@@ -41,7 +41,7 @@ for ($i = 0; $i < count($allFirstLetters); $i++) {
     $firstLetterOffsets[$currentLetter] = $i;
 }
 
-if (preg_match('/^[a-z]$/i', $letter)) {
+if ($letter !== null && preg_match('/^[a-z]$/i', $letter)) {
     $offset = $firstLetterOffsets[$letter];
     $offset -= $offset % $pageSize;
 }

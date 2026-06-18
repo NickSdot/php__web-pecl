@@ -20,6 +20,8 @@
 
 use App\Repository\PackageRepository;
 
+require_once __DIR__.'/../include/bootstrap.php';
+
 // Only support package maintainer for now, needed for bugs.php.net
 $packageIdOrName = filter_input(INPUT_GET, 'package', FILTER_UNSAFE_RAW);
 

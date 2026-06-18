@@ -76,7 +76,7 @@ function response_header($title = 'The PHP Extension Community Library', $style 
 
     $_header_done = true;
     $_style       = $style;
-    $rts          = rtrim($SIDEBAR_DATA);
+    $rts          = rtrim($SIDEBAR_DATA ?? '');
 
     if (substr($rts, -1) == '-') {
         $SIDEBAR_DATA = substr($rts, 0, -1);

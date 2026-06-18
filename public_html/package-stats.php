@@ -52,8 +52,9 @@ if (!empty($_GET['cid'])) {
     $totalReleases    = number_format($database->run('SELECT COUNT(*) AS count FROM releases r, packages p
                     WHERE r.package = p.id AND p.package_type="pecl"')->fetch()['count'], 0, '.', ',');
     $totalCategories  = number_format($database->run('SELECT COUNT(*) AS count FROM categories')->fetch()['count'], 0, '.', ',');
-    $totalDownloads   = number_format($database->run('SELECT SUM(dl_number) AS downloads FROM package_stats, packages p
-                    WHERE package_stats.pid = p.id AND p.package_type="pecl"')->fetch()['downloads'], 0, '.', ',');
+    $downloads = $database->run('SELECT SUM(dl_number) AS downloads FROM package_stats, packages p
+                    WHERE package_stats.pid = p.id AND p.package_type="pecl"')->fetch()['downloads'];
+    $totalDownloads   = number_format($downloads ?? 0, 0, '.', ',');
 
     $sql = "SELECT sum(ps.dl_number) as dl_number, ps.package, ps.pid, ps.rid, ps.cid
             FROM package_stats ps, packages p
