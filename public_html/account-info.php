@@ -29,7 +29,7 @@ use App\Repository\UserRepository;
 
 require_once __DIR__.'/../include/pear-prepend.php';
 
-$handle = filter_input(INPUT_GET, 'handle', FILTER_SANITIZE_STRING);
+$handle = filter_input(INPUT_GET, 'handle', FILTER_UNSAFE_RAW);
 
 // Redirect to the accounts list if no handle was specified
 if (empty($handle)) {

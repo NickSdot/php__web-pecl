@@ -127,7 +127,7 @@ class Rest
             $info .= ' <c xlink:href="' . $extra . 'c/' .
                 urlencode(urlencode($category['name'])) .
                 '/info.xml">' .
-                htmlspecialchars(utf8_encode($category['name'])) . '</c>
+                htmlspecialchars(mb_convert_encoding($category['name'], 'UTF-8', 'ISO-8859-1')) . '</c>
 ';
         }
 
@@ -248,7 +248,7 @@ class Rest
                         $fullpackageinfo .= '
 <deps>
  <v>' . $version . '</v>
- <d>'.htmlspecialchars(utf8_encode(file_get_contents($rdir.'/'.strtolower($package['name']).'/'.$entry))).'</d>
+ <d>'.htmlspecialchars(mb_convert_encoding(file_get_contents($rdir.'/'.strtolower($package['name']).'/'.$entry), 'UTF-8', 'ISO-8859-1')).'</d>
 </deps>
 ';
                     }

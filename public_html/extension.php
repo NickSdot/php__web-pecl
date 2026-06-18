@@ -37,9 +37,9 @@ use App\Utils\Breadcrumbs;
 
 require_once __DIR__.'/../include/pear-prepend.php';
 
-$packageNameOrId = filter_has_var(INPUT_GET, 'package') ? filter_input(INPUT_GET, 'package', FILTER_SANITIZE_STRING) : '';
-$version = filter_has_var(INPUT_GET, 'version') ? filter_input(INPUT_GET, 'version', FILTER_SANITIZE_STRING) : '';
-$windows = isset($windows) ? true : false;
+$packageNameOrId = filter_has_var(INPUT_GET, 'package') ? filter_input(INPUT_GET, 'package', FILTER_UNSAFE_RAW) : '';
+$version = filter_has_var(INPUT_GET, 'version') ? filter_input(INPUT_GET, 'version', FILTER_UNSAFE_RAW) : '';
+$windows = isset($windows);
 
 if (is_numeric($packageNameOrId)) {
     $packageNameOrId = (int) $packageNameOrId;

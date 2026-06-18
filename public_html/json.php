@@ -21,7 +21,7 @@
 use App\Repository\PackageRepository;
 
 // Only support package maintainer for now, needed for bugs.php.net
-$packageIdOrName = filter_input(INPUT_GET, 'package', FILTER_SANITIZE_STRING);
+$packageIdOrName = filter_input(INPUT_GET, 'package', FILTER_UNSAFE_RAW);
 
 if (!$packageIdOrName) {
     header('HTTP/1.0 404 Not Found');

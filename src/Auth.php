@@ -60,7 +60,7 @@ class Auth
         // Extend the session cookie lifetime
         $params = session_get_cookie_params();
         session_set_cookie_params(
-            (!empty($_COOKIE['REMEMBER_ME'])) ? time()+86400 : null,
+            (!empty($_COOKIE['REMEMBER_ME'])) ? time()+86400 : 0,
             $params['path'],
             $params['domain'],
             $params['secure'],

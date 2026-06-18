@@ -25,15 +25,14 @@ use App\Database;
 /**
  * Repository class for packages table.
  */
-class PackageRepository
+readonly class PackageRepository
 {
     /**
      * Class constructor.
      */
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
+    public function __construct(
+        private Database $database
+    ) {}
 
     /**
      * Find all PECL packages. If category ID is provided it gets packages by
