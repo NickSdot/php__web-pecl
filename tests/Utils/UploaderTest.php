@@ -20,32 +20,31 @@
 
 namespace App\Tests\Utils;
 
-use PHPUnit\Framework\TestCase;
 use App\Utils\Uploader;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
 class UploaderTest extends TestCase
 {
-    private $fixturesDirectory = __DIR__.'/../fixtures/files';
+    private const string FIXTURES_DIRECTORY = __DIR__.'/../fixtures/files';
 
-    /**
-     * @dataProvider filesProvider
-     */
+    #[DataProvider('filesProvider')]
     public function testUpload($validExtension, $file)
     {
         $_FILES = [];
         $_FILES['uploaded'] = $file;
 
         $uploader = $this->getMockBuilder(Uploader::class)
-            ->setMethods(['isUploadedFile', 'moveUploadedFile'])
+            ->onlyMethods(['isUploadedFile', 'moveUploadedFile'])
             ->getMock();
 
         $uploader->expects($this->once())
                  ->method('isUploadedFile')
-                 ->will($this->returnValue(true));
+                 ->willReturn(true);
 
         $uploader->expects($this->once())
                  ->method('moveUploadedFile')
-                 ->will($this->returnValue(true));
+                 ->willReturn(true);
 
         $uploader->setMaxFileSize(16 * 1024 * 1024);
         $uploader->setValidExtension($validExtension);
@@ -55,15 +54,15 @@ class UploaderTest extends TestCase
         $this->assertNotNull($tmpFile);
     }
 
-    public function filesProvider()
+    public static function filesProvider(): array
     {
         return [
             [
                 'txt',
                 [
                     'name' => 'foobar.txt',
-                    'tmp_name' => $this->fixturesDirectory.'/foobar.txt',
-                    'size' => filesize($this->fixturesDirectory.'/foobar.txt'),
+                    'tmp_name' => self::FIXTURES_DIRECTORY.'/foobar.txt',
+                    'size' => filesize(self::FIXTURES_DIRECTORY.'/foobar.txt'),
                     'error' => UPLOAD_ERR_OK,
                 ]
             ],
@@ -71,8 +70,8 @@ class UploaderTest extends TestCase
                 'tgz',
                 [
                     'name' => 'hello.tgz',
-                    'tmp_name' => $this->fixturesDirectory.'/hello.tgz',
-                    'size' => filesize($this->fixturesDirectory.'/hello.tgz'),
+                    'tmp_name' => self::FIXTURES_DIRECTORY.'/hello.tgz',
+                    'size' => filesize(self::FIXTURES_DIRECTORY.'/hello.tgz'),
                     'error' => UPLOAD_ERR_OK,
                 ]
             ]

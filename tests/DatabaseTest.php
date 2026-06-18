@@ -29,7 +29,7 @@ class DatabaseTest extends TestCase
     private $database;
     private $adapter;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->adapter = new Adapter();
         $this->adapter->setDsn('sqlite::memory:');

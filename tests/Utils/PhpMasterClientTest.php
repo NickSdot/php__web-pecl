@@ -20,23 +20,22 @@
 
 namespace App\Tests\Utils;
 
-use PHPUnit\Framework\TestCase;
-use App\Utils\PhpMasterClient;
 use App\Tests\Server;
+use App\Utils\PhpMasterClient;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
 class PhpMasterClientTest extends TestCase
 {
     private $server;
     private $client;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->server = new Server();
     }
 
-    /**
-     * @dataProvider postDataProvider
-     */
+    #[DataProvider('postDataProvider')]
     public function testPost($data, $expected)
     {
         $host = $this->server->start();
@@ -48,7 +47,7 @@ class PhpMasterClientTest extends TestCase
         $this->server->stop();
     }
 
-    public function postDataProvider()
+    public static function postDataProvider(): array
     {
         return [
             [[

@@ -20,27 +20,26 @@
 
 namespace App\Tests\Utils;
 
-use PHPUnit\Framework\TestCase;
 use App\Utils\ImageSize;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
 class ImageSizeTest extends TestCase
 {
     private $imageSize;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->imageSize = new ImageSize();
     }
 
-    /**
-     * @dataProvider dateProvider
-     */
+    #[DataProvider('dateProvider')]
     public function testGetSize($image, $expected)
     {
         $this->assertEquals($expected, $this->imageSize->getSize($image));
     }
 
-    public function dateProvider()
+    public static function dateProvider(): array
     {
         return [
             ['/img/peclsmall.gif', 'width="106" height="55"'],

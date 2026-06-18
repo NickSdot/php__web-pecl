@@ -20,27 +20,26 @@
 
 namespace App\Tests\Utils;
 
-use PHPUnit\Framework\TestCase;
 use App\Utils\Licenser;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
 class LicenserTest extends TestCase
 {
     private $licenser;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->licenser = new Licenser();
     }
 
-    /**
-     * @dataProvider licensesProvider
-     */
+    #[DataProvider('licensesProvider')]
     public function testGetHtml($license, $expected)
     {
         $this->assertEquals($expected, $this->licenser->getHtml($license));
     }
 
-    public function licensesProvider()
+    public static function licensesProvider(): array
     {
         return [
             ['PHP', '<a href="https://php.net/license/3_01.txt">PHP</a>'],

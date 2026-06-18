@@ -21,6 +21,7 @@
 namespace App\Tests;
 
 use App\Autoloader;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class MockAutoloader extends Autoloader
@@ -42,7 +43,7 @@ class AutoloaderTest extends TestCase
 {
     protected $autoloader;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->autoloader = new MockAutoloader;
 
@@ -93,15 +94,13 @@ class AutoloaderTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider classesProvider
-     */
+    #[DataProvider('classesProvider')]
     public function testLoad($class, $expected)
     {
         $this->assertEquals($expected, $this->autoloader->load($class));
     }
 
-    public function classesProvider()
+    public static function classesProvider(): array
     {
         return [
             ['Foo\Bar\ClassName', '/vendor/foo.bar/src/ClassName.php'],

@@ -20,27 +20,26 @@
 
 namespace App\Tests\Utils;
 
-use PHPUnit\Framework\TestCase;
 use App\Utils\DsnConverter;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
 class DsnConverterTest extends TestCase
 {
     private $dsnConverter;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->dsnConverter = new DsnConverter();
     }
 
-    /**
-     * @dataProvider dsnProvider
-     */
+    #[DataProvider('dsnProvider')]
     public function testToArray($dsn, $expected)
     {
         $this->assertEquals($expected, $this->dsnConverter->toArray($dsn));
     }
 
-    public function dsnProvider()
+    public static function dsnProvider(): array
     {
         return [
             ['mysql://user:password@localhost/pecl', [

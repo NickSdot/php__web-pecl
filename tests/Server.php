@@ -74,7 +74,7 @@ class Server
                 2 => ['pipe', 'w'],
             ];
 
-            $cmd = "{$this->phpExecutable} -t {$docRoot} -n -S ".$this->address." {$router}";
+            $cmd = "{$this->phpExecutable} -t {$docRoot} -S ".$this->address." {$router}";
             $this->handle = proc_open(addslashes($cmd), $descriptorspec, $pipes, $docRoot, NULL, ['bypass_shell' => true,  'suppress_errors' => true]);
         } else {
             $descriptorspec = [
@@ -83,7 +83,7 @@ class Server
                 2 => STDERR,
             ];
 
-            $cmd = "exec {$this->phpExecutable} -t {$docRoot} -n -S ".$this->address." {$router} > /dev/null 2>&1";
+            $cmd = "exec {$this->phpExecutable} -t {$docRoot} -S ".$this->address." {$router} > /dev/null 2>&1";
 
             $this->handle = proc_open($cmd, $descriptorspec, $pipes, $docRoot);
         }
@@ -135,6 +135,7 @@ class Server
     public function stop()
     {
         $this->shutdown($this->handle);
+        $this->handle = null;
     }
 
     /**
@@ -142,6 +143,10 @@ class Server
      */
     public function shutdown($handle)
     {
+        if (!is_resource($handle)) {
+            return;
+        }
+
         proc_terminate($handle);
 
         // Wait for server to shutdown

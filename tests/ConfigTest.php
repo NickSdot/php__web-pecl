@@ -20,14 +20,13 @@
 
 namespace App\Tests;
 
-use PHPUnit\Framework\TestCase;
 use App\Config;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase
 {
-    /**
-     * @dataProvider configurationProvider
-     */
+    #[DataProvider('configurationProvider')]
     public function testGet($file, $key, $expected)
     {
         $values = require $file;
@@ -36,7 +35,7 @@ class ConfigTest extends TestCase
         $this->assertEquals($expected, $config->get($key));
     }
 
-    public function configurationProvider()
+    public static function configurationProvider(): array
     {
         return [
             [__DIR__.'/fixtures/config.php', 'some_string', 'foo'],

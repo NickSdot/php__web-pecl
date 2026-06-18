@@ -24,17 +24,16 @@ use App\Command\GenerateFixturesCommand;
 use App\Config;
 use App\Database;
 use App\Database\Adapter;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-
-use PHPUnit\Framework\TestCase;
 
 class GenerateFixturesCommandTest extends TestCase
 {
     private $database;
     private $generateFixturesCommand;
 
-    public function setUp()
+    public function setUp(): void
     {
         $adapter = new Adapter();
         $adapter->setDsn('sqlite::memory:');
@@ -57,7 +56,7 @@ class GenerateFixturesCommandTest extends TestCase
         $commandTester->setInputs(['n']);
         $exitCode = $commandTester->execute(['command' => $command->getName()]);
 
-        $this->assertRegExp('/.../', $commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/.../', $commandTester->getDisplay());
         $this->assertSame(0, $exitCode);
     }
 
@@ -74,7 +73,7 @@ class GenerateFixturesCommandTest extends TestCase
         $commandTester->setInputs(['n']);
         $exitCode = $commandTester->execute(['command' => $command->getName()]);
 
-        $this->assertRegExp('/This command can be executed only in dev/', $commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/This command can be executed only in dev/', $commandTester->getDisplay());
         $this->assertSame(0, $exitCode);
     }
 }

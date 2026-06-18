@@ -21,13 +21,12 @@
 namespace App\Tests\Utils;
 
 use App\Utils\Pagination;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PaginationTest extends TestCase
 {
-    /**
-     * @dataProvider itemsProvider
-     */
+    #[DataProvider('itemsProvider')]
     public function testPagination($numberOfItems, $page, $from, $to)
     {
         $pagination = new Pagination();
@@ -41,7 +40,7 @@ class PaginationTest extends TestCase
     /**
      * numberOfItems, page, from, to
      */
-    public function itemsProvider()
+    public static function itemsProvider(): array
     {
         return [
             [101, 1, 1, 15],

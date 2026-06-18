@@ -20,14 +20,13 @@
 
 namespace App\Tests\Utils;
 
-use PHPUnit\Framework\TestCase;
 use App\Utils\FormatDate;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
 class FormatDateTest extends TestCase
 {
-    /**
-     * @dataProvider dateProvider
-     */
+    #[DataProvider('dateProvider')]
     public function testUtc($date, $expected, $format)
     {
         $formatDate = new FormatDate();
@@ -35,7 +34,7 @@ class FormatDateTest extends TestCase
         $this->assertEquals($expected, $formatDate->utc($date, $format));
     }
 
-    public function dateProvider()
+    public static function dateProvider(): array
     {
         return [
             ['2018-10-10 10:10:10', '2018-10-10 10:10 UTC', null],
