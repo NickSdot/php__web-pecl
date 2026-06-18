@@ -23,7 +23,7 @@ use App\Repository\UserRepository;
 require_once __DIR__.'/../include/bootstrap.php';
 
 if (empty($user)) {
-    $user = isset($_GET['handle']) ? $_GET['handle'] : null;
+    $user = $_GET['handle'] ?? null;
 }
 
 if (empty($user)) {
