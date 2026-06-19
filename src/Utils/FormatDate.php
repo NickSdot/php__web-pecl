@@ -41,7 +41,7 @@ class FormatDate
      *
      * @return string Formatted time in UTC time zone
      */
-    public function utc($string = null, $format = null)
+    public function utc($string = null, $format = null): string
     {
         if (empty($string) || '0000-00-00 00:00:00' === $string) {
             $string = date('Y-m-d H:i:s');
@@ -50,6 +50,6 @@ class FormatDate
         $date = \DateTime::createFromFormat('Y-m-d H:i:s', $string);
         $date->setTimezone(new \DateTimeZone('UTC'));
 
-        return $date->format(($format) ? $format : 'Y-m-d H:i \U\T\C');
+        return $date->format($format ?: 'Y-m-d H:i \U\T\C');
     }
 }
