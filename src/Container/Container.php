@@ -66,9 +66,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Get entry.
-     *
-     * @return mixed
+     * {@inheritDoc}
      */
     public function get($id)
     {

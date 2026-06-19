@@ -26,6 +26,7 @@
  */
 
 use App\Container\Container;
+use App\Container\ContainerInterface;
 
 $container = new Container(include __DIR__.'/parameters.php');
 
@@ -64,7 +65,7 @@ $container->set(App\Auth::class, function ($c) {
     return $auth;
 });
 
-$container->set('auth_user', function ($c) {
+$container->set('auth_user', function (ContainerInterface $c): ?App\Entity\User {
     return $c->get(App\Auth::class)->initUser();
 });
 

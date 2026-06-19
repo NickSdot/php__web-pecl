@@ -28,12 +28,14 @@ interface ContainerInterface
     /**
      * Finds an entry of the container by its identifier and returns it.
      *
-     * @param string $id identifier of the entry to look for
+     * @template T of object
+     *
+     * @param class-string<T>|string $id identifier of the entry to look for
      *
      * @throws NotFoundExceptionInterface  no entry was found for **this** identifier
      * @throws ContainerExceptionInterface error while retrieving the entry
      *
-     * @return mixed entry
+     * @return ($id is class-string<T> ? T : mixed) entry
      */
     public function get($id);
 
