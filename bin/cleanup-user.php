@@ -20,30 +20,28 @@
 */
 
 /**
- * Drop all accounts not active in any package and not having an SVN account
- *
- * @var \PDO $database
+ * Drop all accounts not active in any package and not having a SVN account
  */
 
 require_once __DIR__.'/../include/bootstrap.php';
 
-$svnUsers = '/home/pierre/project/pecl/migration/svnusers';
-$svn_accounts = file($svnUsers);
+$svnusers = '/home/pierre/project/pecl/migration/svnusers';
+$svn_accounts = file($svnusers);
 
-function removeNewlines(&$var): void
-{
+function nonl(&$var) {
     $var = str_replace(["\n","\r", "\r\n"], '', $var);
 }
 
-array_walk($svn_accounts, 'removeNewlines');
+array_walk($svn_accounts, 'nonl');
 
 $sql = 'select handle from users  where handle NOT IN (select handle from maintains)';
 
 $res = $database->query($sql);
+$sql_del = 'DELETE FROM users WHERE handle=';
 $del = 0;
 foreach ($res as $row) {
     if (!in_array($row['handle'], $svn_accounts)) {
-        $res = $database->query("DELETE FROM users WHERE handle='{$row['handle']}'");
+        $res = $database->query($sql_del . "'" . $row['handle'] . "'");
         if ($res) $del++;
     }
 }
