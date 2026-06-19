@@ -162,17 +162,23 @@ class User
         $package_id = $packageEntity->info($pkgid, 'id');
 
         if ($role == 'any') {
-            return $database->run('SELECT role FROM maintains WHERE handle = ? '.
-                                'AND package = ?', [$user, $package_id])->fetch()['role'];
+            return $database->run(
+                'SELECT role FROM maintains WHERE handle = ? AND package = ?',
+                [$user, $package_id]
+            )->fetchColumn();
         }
 
         if (is_array($role)) {
-            return $database->run('SELECT role FROM maintains WHERE handle = ? AND package = ? '.
-                                'AND role IN ("?")', [$user, $package_id, implode('","', $role)])->fetch()['role'];
+            return $database->run(
+                'SELECT role FROM maintains WHERE handle = ? AND package = ? AND role IN ("?")',
+                [$user, $package_id, implode('","', $role)]
+            )->fetchColumn();
         }
 
-        return $database->run('SELECT role FROM maintains WHERE handle = ? AND package = ? '.
-                            'AND role = ?', [$user, $package_id, $role])->fetch()['role'];
+        return $database->run(
+            'SELECT role FROM maintains WHERE handle = ? AND package = ? AND role = ?',
+            [$user, $package_id, $role]
+        )->fetchColumn();
     }
 
     /**
