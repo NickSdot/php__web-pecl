@@ -36,9 +36,9 @@ use \PEAR_Config as PEAR_Config;
  */
 class Release
 {
-    private $database;
+    private Database $database;
     private $authUser;
-    private $rest;
+    private Rest $rest;
     private $packagesDir;
     private $package;
 
