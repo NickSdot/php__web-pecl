@@ -32,13 +32,13 @@ use App\Rest;
  */
 class Category
 {
-    private $database;
-    private $rest;
+    private Database $database;
+    private Rest $rest;
 
     /**
      * Set database handler.
      */
-    public function setDatabase(Database $database)
+    public function setDatabase(Database $database): void
     {
         $this->database = $database;
     }
@@ -46,7 +46,7 @@ class Category
     /**
      * Set REST generator service.
      */
-    public function setRest(Rest $rest)
+    public function setRest(Rest $rest): void
     {
         $this->rest = $rest;
     }
@@ -60,9 +60,8 @@ class Category
      *        'parent' => 'category parent id'
      *    ];
      *
-     * @param array
      */
-    public function add($data)
+    public function add(array $data)
     {
         // Get ID for the category. The current database schema doesn't have the
         // auto increment set yet for the id column.
@@ -78,7 +77,7 @@ class Category
 
         $sql = 'INSERT INTO categories (id, name, description, parent) VALUES (?, ?, ?, ?)';
 
-        $err = $this->database->run($sql, [$id, $name, $desc, $parent]);
+        $this->database->run($sql, [$id, $name, $desc, $parent]);
 
         $this->renumberVisitations($id, $parent);
 
@@ -91,9 +90,9 @@ class Category
     /**
      * Updates a categories details
      *
-     * @param  integer $id   Category ID
-     * @param  string  $name Category name
-     * @param  string  $desc Category Description
+     * @param  int $id   Category ID
+     * @param  string $name Category name
+     * @param  string $desc Category Description
      */
     public function update($id, $name, $desc = '')
     {
@@ -105,9 +104,9 @@ class Category
     /**
      * Deletes a category
      *
-     * @param integer $id Category ID
+     * @param int $id Category ID
      */
-    public function delete($id)
+    public function delete($id): true
     {
         // Get category data
         $sql = 'SELECT name, parent FROM categories WHERE id = ?';
@@ -126,7 +125,7 @@ class Category
         $this->database->run('UPDATE categories SET cat_left = cat_left - 2, cat_right = cat_right - 2 WHERE cat_right > ' . $deleted_cat_right);
 
         // Update any child categories
-        $this->database->run(sprintf('UPDATE categories SET parent = %s WHERE parent = %d', ($parentId ? $parentId : 'NULL'), $id));
+        $this->database->run(sprintf('UPDATE categories SET parent = %s WHERE parent = %d', ($parentId ?: 'NULL'), $id));
 
         $this->rest->deleteCategory($category['name']);
 
@@ -155,7 +154,7 @@ class Category
      *
      *  SELECT * FROM table WHERE right-1 = left;
      */
-    public function renumberVisitations($id, $parent = null)
+    public function renumberVisitations($id, $parent = null): true
     {
         if ($parent === null) {
             $left = $this->database->run("SELECT MAX(cat_right) + 1 AS `left` FROM categories WHERE parent IS NULL")->fetch()['left'];
@@ -183,10 +182,10 @@ class Category
     /**
      * Determines if the given category is valid
      *
-     * @param  string Name of the category
-     * @return  boolean
+     * @param  string $categoryName
+     * @return  bool
      */
-    public function isValid($categoryName)
+    public function isValid($categoryName): bool
     {
         $sql = 'SELECT id FROM categories WHERE name = ?';
         $results = $this->database->run($sql, [$categoryName])->fetchAll();
