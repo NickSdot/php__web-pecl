@@ -22,15 +22,6 @@ use App\Auth;
 
 require_once __DIR__.'/../include/pear-prepend.php';
 
-/*
- * If the PHPSESSID cookie isn't set, the user MAY have cookies turned off.
- * To figure out cookies are REALLY off, check to see if the person came
- * from within the PECL website or just submitted the login form.
- */
-if (!isset($_COOKIE[session_name()]) && isset($_POST['PECL_USER']) && isset($_POST['PECL_PW'])) {
-//    $container->get(Auth::class)->reject('Cookies must be enabled to log in.');
-}
-
 // If user is already logged in redirect to homepage.
 if (!empty($container->get('auth_user'))) {
     header('Location: /');
