@@ -127,7 +127,7 @@ readonly class PackageRepository
                     p.license AS license,
                     p.summary AS summary,
                     p.description AS description,
-                    m.handle AS lead
+                    m.handle AS 'lead'
                 FROM packages p, categories c, maintains m
                 WHERE p.package_type = 'pecl'
                     AND p.approved = 1
@@ -154,7 +154,7 @@ readonly class PackageRepository
                 WHERE p.package_type = 'pecl'
                     AND p.approved = 1
                     AND p.id = r.package
-                ORDER BY r.releasedate ASC ";
+                ORDER BY r.releasedate";
 
         $allreleases = $this->database->run($sql)->fetchAll();
         $results = [];
