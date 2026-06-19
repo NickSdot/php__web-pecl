@@ -25,25 +25,19 @@ use App\Database;
 /**
  * Repository class for retrieving user notes.
  */
-class CvsAclRepository
+readonly class CvsAclRepository
 {
-    /**
-     * Database handle.
-     */
-    private $database;
-
     /**
      * Class constructor.
      */
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
+    public function __construct(
+        private Database $database
+    ) {}
 
     /**
      * Get access info by given username.
      */
-    public function getPathByUsername($username)
+    public function getPathByUsername($username): array
     {
         $sql = "SELECT path FROM cvs_acl WHERE username = :username";
 
