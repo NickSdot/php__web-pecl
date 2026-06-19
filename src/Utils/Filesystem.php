@@ -20,6 +20,10 @@
 
 namespace App\Utils;
 
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
 /**
  * Common filesystem utilities and helpers.
  */
@@ -28,14 +32,14 @@ class Filesystem
     /**
      * Remove given path (directory or file) recursively.
      */
-    public function delete($path)
+    public function delete(string $path): void
     {
         if (is_file($path)) {
             unlink($path);
         } elseif (is_dir($path)) {
-            $files = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
-                \RecursiveIteratorIterator::CHILD_FIRST
+            $files = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::CHILD_FIRST
             );
 
             foreach ($files as $file) {
