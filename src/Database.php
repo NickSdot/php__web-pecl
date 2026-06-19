@@ -25,25 +25,16 @@ use App\Database\Adapter;
 /**
  * Database handler.
  */
-class Database
+readonly class Database
 {
-    /**
-     * @var Adapter
-     */
-    private $adapter;
-
-    /**
-     * Class constructor.
-     */
-    public function __construct(\PDO $adapter)
-    {
-        $this->adapter = $adapter;
-    }
+    public function __construct(
+        private Adapter|\PDO $adapter
+    ) {}
 
     /**
      * Runs given SQL query using prepared statements or query method.
      */
-    public function run($sql, array $arguments = [])
+    public function run(string $sql, array $arguments = [])
     {
         if (!$arguments) {
              return $this->adapter->query($sql);
