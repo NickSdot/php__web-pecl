@@ -20,6 +20,9 @@
 
 namespace App\Template;
 
+use Closure;
+use Exception;
+
 /**
  * A simple template engine that assigns global variables to the templates and
  * renders given template.
@@ -27,46 +30,34 @@ namespace App\Template;
 class Engine
 {
     /**
-     * Templates directory contains all application templates.
-     *
-     * @var string
-     */
-    private $dir;
-
-    /**
      * Registered callables.
-     *
-     * @var array
      */
-    private $callables = [];
+    private array $callables = [];
 
     /**
      * Assigned variables after template initialization and before calling the
      * render method.
-     *
-     * @var array
      */
-    private $variables = [];
+    private array $variables = [];
 
     /**
      * Template context.
-     *
-     * @var Context
      */
-    private $context;
+    private Context $context;
 
     /**
      * Class constructor.
      *
-     * @param string $dir
+     * @param string $dir Templates directory contains all application templates.
+     *
+     * @throws \Exception
      */
-    public function __construct($dir)
-    {
+    public function __construct(
+        private readonly string $dir
+    ) {
         if (!is_dir($dir)) {
-            throw new \Exception($dir.' is missing or not a valid directory.');
+            throw new Exception($dir.' is missing or not a valid directory.');
         }
-
-        $this->dir = $dir;
     }
 
     /**
@@ -74,36 +65,22 @@ class Engine
      * initializing a template engine. Some variables in templates are like
      * parameters or globals and should be added only on one place instead of
      * repeating them at each ...->render() call.
-     *
-     * @return void
      */
-    public function assign(array $variables = [])
+    public function assign(array $variables = []): void
     {
         $this->variables = array_replace($this->variables, $variables);
-    }
-
-    /**
-     * Get assigned variables of the template.
-     *
-     * @return array
-     */
-    public function getVariables()
-    {
-        return $this->variables;
     }
 
     /**
      * Add new template helper function as a callable defined in the (front)
      * controller to the template scope.
      *
-     * @param string $name
-     *
-     * @return void
+     * @throws \Exception
      */
-    public function register($name, callable $callable)
+    public function register(string $name, callable $callable): void
     {
         if (method_exists(Context::class, $name)) {
-            throw new \Exception(
+            throw new Exception(
                 $name.' is already registered by the template engine. Use a different name.'
             );
         }
@@ -116,11 +93,9 @@ class Engine
      * provided as array elements. Each array key is a variable name in template
      * scope and array item value is set as a variable value.
      *
-     * @param string $template
-     *
-     * @return string
+     * @throws \Exception
      */
-    public function render($template, array $variables = [])
+    public function render(string $template, array $variables = []): string
     {
         $variables = array_replace($this->variables, $variables);
 
@@ -145,24 +120,22 @@ class Engine
      * output buffering and returns the rendered content string. Note that $this
      * pseudo-variable in the closure refers to the scope of the Context class.
      *
-     * @param string $template
-     *
-     * @return string
+     * @throws \Exception
      */
-    private function bufferize($template, array $variables = [])
+    private function bufferize(string $template, array $variables = []): string
     {
         if (!is_file($this->dir.'/'.$template)) {
-            throw new \Exception($template.' is missing or not a valid template.');
+            throw new Exception($template.' is missing or not a valid template.');
         }
 
-        $closure = \Closure::bind(
+        $closure = Closure::bind(
             function ($template, $variables) {
                 $this->current = $template;
                 $this->variables = array_replace($this->variables, $variables);
                 unset($variables, $template);
 
                 if (count($this->variables) > extract($this->variables, EXTR_SKIP)) {
-                    throw new \Exception(
+                    throw new Exception(
                         'Variables with numeric names $0, $1... cannot be imported to scope '.$this->current
                     );
                 }
@@ -173,7 +146,7 @@ class Engine
 
                 try {
                     include $this->dir.'/'.$this->current;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // Close all opened buffers
                     while ($this->bufferLevel > 0) {
                         --$this->bufferLevel;

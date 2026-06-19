@@ -1,5 +1,5 @@
 <?php
-
+/** @var \App\Template\Engine $template */
 /*
   +----------------------------------------------------------------------+
   | The PECL website                                                     |

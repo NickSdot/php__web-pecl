@@ -20,6 +20,8 @@
 
 namespace App\Template;
 
+use Exception;
+
 /**
  * Context represents a template variable scope where $this pseudo-variable can
  * be used in the templates and context methods can be called as $this->method().
@@ -27,81 +29,55 @@ namespace App\Template;
 class Context
 {
     /**
-     * Templates directory.
-     *
-     * @var string
-     */
-    private $dir;
-
-    /**
      * The current processed template or snippet file.
      *
      * @var string
      */
     private $current;
 
-    /**
-     * All assigned and set variables for the template.
-     *
-     * @var array
-     */
-    private $variables = [];
 
     /**
      * Pool of blocks for the template context.
-     *
-     * @var array
      */
-    private $blocks = [];
+    private array $blocks = [];
 
     /**
      * Parent templates extended by child templates.
-     *
-     * @var array
      */
-    public $tree = [];
-
-    /**
-     * Registered callables.
-     *
-     * @var array
-     */
-    private $callables = [];
+    public array $tree = [];
 
     /**
      * Current nesting level of the output buffering mechanism.
-     *
-     * @var int
      */
-    private $bufferLevel = 0;
+    private int $bufferLevel = 0;
 
     /**
      * Class constructor.
      *
-     * @param string $dir
+     * @param string $dir Templates directory.
+     * @param array $variables All assigned and set variables for the template.
+     * @param array $callables Registered callables.
      */
     public function __construct(
-        $dir,
-        array $variables = [],
-        array $callables = []
-    ) {
-        $this->dir = $dir;
-        $this->variables = $variables;
-        $this->callables = $callables;
-    }
+        private readonly string $dir,
+        private array $variables = [],
+        private readonly array $callables = []
+    ) {}
 
     /**
      * Sets a parent layout for the given template. Additional variables in the
      * parent scope can be defined via the second argument.
      *
      * @param string $parent
+     * @param array $variables
      *
      * @return void
+     * @throws \Exception
      */
-    public function extend($parent, array $variables = [])
+    public function extend($parent, array $variables = []): void
     {
         if (isset($this->tree[$this->current])) {
-            throw new \Exception('Extending '.$parent.' is not possible.');
+            throw new Exception('Extending '.$parent.' is not possible.');
         }
 
         $this->tree[$this->current] = [$parent, $variables];
@@ -114,9 +90,9 @@ class Context
      *
      * @return string
      */
-    public function block($name)
+    public function block($name): string
     {
-        return isset($this->blocks[$name]) ? $this->blocks[$name] : '';
+        return $this->blocks[$name] ?? '';
     }
 
     /**
@@ -125,10 +101,8 @@ class Context
      * appended to previously set same block name.
      *
      * @param string $name
-     *
-     * @return void
      */
-    public function start($name)
+    public function start($name): void
     {
         $this->blocks[$name] = '';
 
@@ -138,14 +112,12 @@ class Context
     }
 
     /**
-     * Append content to a template block. If no block with the key name exists
+     * Append content to a template block. If no block with the key name exists,
      * yet it starts a new one.
      *
      * @param string $name
-     *
-     * @return void
      */
-    public function append($name)
+    public function append($name): void
     {
         if (!isset($this->blocks[$name])) {
             $this->blocks[$name] = '';
@@ -160,10 +132,8 @@ class Context
      * Ends block output buffering and stores its content into the pool.
      *
      * @param string $name
-     *
-     * @return void
      */
-    public function end($name)
+    public function end($name): void
     {
         --$this->bufferLevel;
 
@@ -182,11 +152,12 @@ class Context
      * @param string $template
      *
      * @return mixed
+     * @throws \Exception
      */
     public function insert($template, array $variables = [])
     {
         if (count($variables) > extract($variables, EXTR_SKIP)) {
-            throw new \Exception(
+            throw new Exception(
                 'Variables with numeric names $0, $1... cannot be imported to scope '.$template
             );
         }
@@ -197,12 +168,8 @@ class Context
     /**
      * Scalpel when preventing XSS vulnerabilities. This escapes given string
      * and still preserves certain characters as HTML.
-     *
-     * @param string $string
-     *
-     * @return string
      */
-    public function e($string)
+    public function e(?string $string): string
     {
         return htmlspecialchars($string ?? '', ENT_QUOTES, 'UTF-8');
     }
@@ -210,12 +177,8 @@ class Context
     /**
      * Hammer when protecting against XSS. Sanitize strings and replace all
      * characters to their applicable HTML entities from it.
-     *
-     * @param string $string
-     *
-     * @return string
      */
-    public function noHtml($string)
+    public function noHtml(?string $string): string
     {
         return htmlentities($string ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
