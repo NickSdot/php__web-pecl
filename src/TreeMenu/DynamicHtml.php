@@ -49,7 +49,7 @@ class DynamicHtml extends Presentation
      * fully expanded an non-dynamic.
      * @var bool
      */
-    var $isDynamic;
+    var bool $isDynamic;
 
     /**
      * Path to the images
@@ -120,11 +120,8 @@ class DynamicHtml extends Presentation
      *
      * And also a boolean for whether the entire tree is dynamic or not. This
      * overrides any perNode dynamic settings.
-     *
-     * @param array         $options    Array of options
-     * @param bool          $isDynamic  Whether the tree is dynamic or not
      */
-    public function __construct(TreeMenu $structure, array $options = [], $isDynamic = true)
+    public function __construct(TreeMenu $structure, array $options = [], bool $isDynamic = true)
     {
         parent::__construct($structure);
         $this->isDynamic = $isDynamic;
@@ -152,7 +149,7 @@ class DynamicHtml extends Presentation
      *
      * @return string The HTML for the menu
      */
-    public function toHTML()
+    public function toHTML(): string
     {
         static $count = 0;
 
@@ -194,10 +191,11 @@ class DynamicHtml extends Presentation
     /**
      * Prints a node of the menu
      *
-     * @param mixed         $prefix         prefix
-     * @param string        $return         default to 'newNode'
-     * @param int           $currentDepth   default to 0
-     * @param mixed         $maxDepthPrefix default to null
+     * @param \App\TreeMenu\TreeNode $nodeObj
+     * @param mixed $prefix         prefix
+     * @param string $return        default to 'newNode'
+     * @param int $currentDepth     default to 0
+     * @param mixed $maxDepthPrefix default to null
      *
      * @return string
      */
@@ -205,7 +203,7 @@ class DynamicHtml extends Presentation
                          $prefix,
                          $return         = 'newNode',
                          $currentDepth   = 0,
-                         $maxDepthPrefix = null)
+                         $maxDepthPrefix = null): string
     {
         $prefix = empty($maxDepthPrefix) ? $prefix : $maxDepthPrefix;
 

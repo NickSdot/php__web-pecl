@@ -106,10 +106,8 @@ class Listbox extends Presentation
 
     /**
      * Returns the HTML generated
-     *
-     * @return string
      */
-    public function toHTML()
+    public function toHTML(): string
     {
         static $count = 0;
 
@@ -143,10 +141,8 @@ class Listbox extends Presentation
      * Returns HTML for a single node
      *
      * @param string        $prefix defaults to empty string
-     *
-     * @return string
      */
-    private function nodeToHTML(TreeNode $node, $prefix = '')
+    private function nodeToHTML(TreeNode $node, $prefix = ''): string
     {
         $html = sprintf('<option value="%s">%s%s</option>',
                         $node->link,
