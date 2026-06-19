@@ -25,24 +25,25 @@
 namespace App\Entity;
 
 use App\Database;
+use PDOStatement;
 
 /**
  * Entity class representing notes table row.
  */
 class Note
 {
-    private $database;
+    private Database $database;
     private $authUser;
 
     /**
      * Array of valid column names to use in SQL query.
      */
-    private $validKeys = ['uid', 'rid', 'cid', 'pid'];
+    private array $validKeys = ['uid', 'rid', 'cid', 'pid'];
 
     /**
      * Set database handler.
      */
-    public function setDatabase(Database $database)
+    public function setDatabase(Database $database): void
     {
         $this->database = $database;
     }
@@ -50,7 +51,7 @@ class Note
     /**
      * Set database handler.
      */
-    public function setAuthUser($authUser)
+    public function setAuthUser($authUser): void
     {
         $this->authUser = $authUser;
     }
@@ -82,7 +83,7 @@ class Note
     /**
      * Remove note.
      */
-    public function remove($id)
+    public function remove($id): false|PDOStatement
     {
         return $this->database->run("DELETE FROM notes WHERE id = ?", [(int)$id]);
     }
@@ -90,7 +91,7 @@ class Note
     /**
      * Remove all notes by key.
      */
-    public function removeAll($key, $value)
+    public function removeAll($key, $value): false|PDOStatement
     {
         // Validate key
         if (!in_array($key, $this->validKeys, true)) {
