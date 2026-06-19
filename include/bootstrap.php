@@ -85,6 +85,13 @@ if ($config->get('env') === 'dev') {
 // Set application default time zone to UTC for all dates.
 date_default_timezone_set('UTC');
 
+// Some PEAR classes define constants in global scope and need to be included
+// separately before requiring other PEAR-dependent code.
+require_once 'PEAR.php';
+require_once 'PEAR/Config.php';
+require_once 'PEAR/PackageFile/Parser/v2.php';
+require_once 'PEAR/PackageFile.php';
+
 /**
  * Initialize dependency injection container
  *
