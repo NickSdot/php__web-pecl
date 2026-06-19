@@ -23,12 +23,12 @@ namespace App\Utils;
 /**
  * Service class to convert DSN string to array.
  */
-class DsnConverter
+readonly class DsnConverter
 {
     /**
-     * Convert DSN string 'scheme://username:password@host/database' to array.
+     * Convert DSN string scheme://username:password@host/database' to array.
      */
-    public function toArray($dsn)
+    public function toArray($dsn): array
     {
         $array = [
             'scheme' => '',
@@ -38,13 +38,13 @@ class DsnConverter
             'database' => '',
         ];
 
-        $scheme = preg_split('/\:\/\//', $dsn, -1, PREG_SPLIT_NO_EMPTY);
+        $scheme = preg_split('/:\/\//', $dsn, -1, PREG_SPLIT_NO_EMPTY);
         $array['scheme'] = $scheme[0];
 
-        $username = preg_split('/\:/', $scheme[1], -1, PREG_SPLIT_NO_EMPTY);
+        $username = preg_split('/:/', $scheme[1], -1, PREG_SPLIT_NO_EMPTY);
         $array['username'] = $username[0];
 
-        $password = preg_split('/\@/', $username[1], -1, PREG_SPLIT_NO_EMPTY);
+        $password = preg_split('/@/', $username[1], -1, PREG_SPLIT_NO_EMPTY);
         $array['password'] = $password[0];
 
         $host = preg_split('/\//', $password[1], -1, PREG_SPLIT_NO_EMPTY);
