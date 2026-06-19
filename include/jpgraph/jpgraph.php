@@ -11,7 +11,6 @@
 require_once('jpg-config.inc.php');
 require_once('jpgraph_gradient.php');
 require_once('jpgraph_errhandler.inc.php');
-require_once('jpgraph_dateformat.inc.php');
 require_once('jpgraph_ttf.inc.php');
 require_once('jpgraph_rgb.inc.php');
 require_once('jpgraph_text.inc.php');
@@ -393,15 +392,15 @@ class DateLocale {
         }
 
         $this->iLocale = $aLocale;
-        for( $i = 0, $ofs = 0 - _jpgraph_strftime('%w'); $i < 7; $i++, $ofs++ ) {
-            $day = _jpgraph_strftime('%a', strtotime("$ofs day"));
+        for( $i = 0, $ofs = 0 - date('w'); $i < 7; $i++, $ofs++ ) {
+            $day = date('D', strtotime("$ofs day"));
             $day[0] = strtoupper($day[0]);
             $this->iDayAbb[$aLocale][]= $day[0];
             $this->iShortDay[$aLocale][]= $day;
         }
 
         for($i=1; $i<=12; ++$i) {
-            list($short ,$full) = explode('|', _jpgraph_strftime("%b|%B",strtotime("2001-$i-01")));
+            list($short ,$full) = explode('|', date("M|F",strtotime("2001-$i-01")));
             $this->iShortMonth[$aLocale][] = ucfirst($short);
             $this->iMonthName [$aLocale][] = ucfirst($full);
         }
