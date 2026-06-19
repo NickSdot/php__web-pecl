@@ -23,7 +23,7 @@ namespace App;
 /**
  * Template helper class for displaying data in table.
  */
-class BorderBox
+readonly class BorderBox
 {
     /**
      * Class constructor
@@ -49,10 +49,10 @@ class BorderBox
         }
         $i = $this->indent;
         print "<!-- border box starts -->\n";
-        print "$i<table cellpadding=\"0\" cellspacing=\"1\" style=\"width: $this->width; border: 0px;\">\n";
+        print "$i<table cellpadding=\"0\" cellspacing=\"1\" style=\"width: $this->width; border: 0;\">\n";
         print "$i <tr>\n";
         print "$i  <td bgcolor=\"#000000\">\n";
-        print "$i   <table cellpadding=\"2\" cellspacing=\"1\" style=\"width: 100%; border: 0px;\">\n";
+        print "$i   <table cellpadding=\"2\" cellspacing=\"1\" style=\"width: 100%; border: 0;\">\n";
         print "$i    <tr style=\"background-color: #CCCCCC;\">\n";
         print "$i     <th";
         if ($this->cols > 1) {
@@ -141,21 +141,6 @@ class BorderBox
             }
             print "</td>\n";
         }
-        print "$i    </tr>\n";
-    }
-
-    /**
-     * Table row with background.
-     */
-    public function fullRow($text): void
-    {
-        $i = $this->indent;
-        print "$i    <tr>\n";
-        print "$i     <td bgcolor=\"#e8e8e8\"";
-        if ($this->cols > 1) {
-            print " colspan=\"$this->cols\"";
-        }
-        print ">$text</td>\n";
         print "$i    </tr>\n";
     }
 }
