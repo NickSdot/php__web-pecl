@@ -94,7 +94,7 @@ foreach ($packageRepository->listAll() as $package => $info) {
             $statement = $database->run($sql, [':release_id' => $release['id']]);
             $result = $statement->fetch();
 
-            $fileinfo = isset($result['fullpath']) ? $result['fullpath'] : [];
+            $fileinfo = $result['fullpath'] ?? null;
 
             if (!$fileinfo) {
                 echo "     Skipping INVALID Version $version (corrupt in database!)\n";

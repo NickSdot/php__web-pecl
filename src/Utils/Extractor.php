@@ -23,25 +23,21 @@ namespace App\Utils;
 /**
  * Extractor utility to get contents of a file from a tar gzip archive.
  */
-class Extractor
+readonly class Extractor
 {
     /**
-     * Tar gzip (.tgz or tar.gz) archive file.
-     */
-    private $archive;
-
-    /**
      * Class constructor.
+     *
+     * @param string $archive Tar gzip (.tgz or tar.gz) archive file.
      */
-    public function __construct($archive)
-    {
-        $this->archive = $archive;
-    }
+    public function __construct(
+        private string $archive
+    ) {}
 
     /**
      * Get contents of file in archive.
      */
-    public function getFileContents($file)
+    public function getFileContents($file): false|string
     {
         $stream = 'phar://'.$this->archive.'/'.$file;
 
