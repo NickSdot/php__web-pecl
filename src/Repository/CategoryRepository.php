@@ -25,25 +25,19 @@ use App\Database;
 /**
  * Repository class for retrieving the category data.
  */
-class CategoryRepository
+readonly class CategoryRepository
 {
-    /**
-     * Database handle.
-     */
-    private $database;
-
     /**
      * Class constructor.
      */
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
+    public function __construct(
+        private Database $database
+    ) {}
 
     /**
      * Find all categories.
      */
-    public function findAll()
+    public function findAll(): array
     {
         $sql = "SELECT * FROM categories ORDER BY name";
 
