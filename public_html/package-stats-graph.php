@@ -32,7 +32,7 @@
 use \BarPlot as BarPlot;
 use \Graph as Graph;
 use \GroupBarPlot as GroupBarPlot;
-use App\Repository\AgregatedPackageStatsRepository;
+use App\Repository\AggregatedPackageStatsRepository;
 
 // TODO: these are required manually due to no PSR-4 support yet
 require_once __DIR__.'/../include/jpgraph/jpgraph.php';
@@ -69,7 +69,7 @@ foreach ($releases as $release) {
         $y_axis[$key] = 0;
     }
 
-    $repository = new AgregatedPackageStatsRepository($database);
+    $repository = new AggregatedPackageStatsRepository($database);
 
     $results = $repository->find($_GET['pid'], $rid);
 

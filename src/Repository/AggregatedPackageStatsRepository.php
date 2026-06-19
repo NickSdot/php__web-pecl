@@ -25,28 +25,23 @@ use App\Database;
 /**
  * Statistics repository class for retrieving agregated_package_stats results.
  */
-class AgregatedPackageStatsRepository
+readonly class AggregatedPackageStatsRepository
 {
-    /**
-     * Database handle.
-     */
-    private $database;
-
     /**
      * Class constructor.
      */
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
+    public function __construct(
+        private Database $database
+    ) {}
 
     /**
      * Get total number of package downloads.
      *
-     * @param  integer ID of the package
+     * @param int $packageId
+     * @param int $releaseId
      * @return array
      */
-    public function find($packageId, $releaseId)
+    public function find($packageId, $releaseId): array
     {
         $sql = "SELECT
                     YEAR(yearmonth) AS dyear,

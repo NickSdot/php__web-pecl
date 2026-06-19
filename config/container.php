@@ -96,8 +96,8 @@ $container->set(App\Template\Engine::class, function ($c) {
     return $template;
 });
 
-$container->set(App\Repository\AgregatedPackageStatsRepository::class, function ($c) {
-    return new App\Repository\AgregatedPackageStatsRepository($c->get(App\Database::class));
+$container->set(App\Repository\AggregatedPackageStatsRepository::class, function ($c) {
+    return new App\Repository\AggregatedPackageStatsRepository($c->get(App\Database::class));
 });
 
 $container->set(App\Repository\CategoryRepository::class, function ($c) {
