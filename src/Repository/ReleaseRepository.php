@@ -32,28 +32,25 @@ use App\Database;
  */
 class ReleaseRepository
 {
-    private $database;
-
     /**
      * Number of recent releases returned.
      */
-    const MAX_ITEMS_RETURNED = 5;
+    private const int MAX_ITEMS_RETURNED = 5;
 
     /**
      * Class constructor.
      */
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
+    public function __construct(
+        private readonly Database $database
+    ) {}
 
     /**
      * Get recent releases
      *
-     * @param  integer Number of releases to return
+     * @param  int $max Number of releases to return
      * @return array
      */
-    public function findRecent($max = self::MAX_ITEMS_RETURNED)
+    public function findRecent($max = self::MAX_ITEMS_RETURNED): array
     {
         $sql = "SELECT packages.id AS id,
                     packages.name AS name,
@@ -77,11 +74,11 @@ class ReleaseRepository
     /**
      * Get list of recent releases for the given category
      *
-     * @param  string Name of the category
-     * @param  int Number of releases to return
+     * @param  string $categoryName
+     * @param  int $max Number of releases to return
      * @return array
      */
-    public function findRecentByCategoryName($categoryName, $max = self::MAX_ITEMS_RETURNED)
+    public function findRecentByCategoryName($categoryName, $max = self::MAX_ITEMS_RETURNED): array
     {
         $sql = "SELECT p.id AS id,
                     p.name AS name,
@@ -110,7 +107,7 @@ class ReleaseRepository
     /**
      * Find all releases by package id.
      */
-    public function findByPackageId($packageId)
+    public function findByPackageId($packageId): array
     {
         $sql = "SELECT id, version FROM releases WHERE package = :package_id";
 
@@ -124,7 +121,7 @@ class ReleaseRepository
     /**
      * Sorting function for usort.
      */
-    private function sortVersions($a, $b)
+    private function sortVersions($a, $b): bool|int
     {
         return version_compare($b['version'], $a['version']);
     }
@@ -132,11 +129,11 @@ class ReleaseRepository
     /**
      * Get recent releases for the given user
      *
-     * @param  string Handle of the user
-     * @param  int    Number of releases
+     * @param  string $handle Handle of the user
+     * @param  int    $max Number of releases
      * @return array
      */
-    public function getRecentByUser($handle, $max = MAX_ITEMS_RETURNED)
+    public function getRecentByUser($handle, $max = self::MAX_ITEMS_RETURNED): array
     {
         $sql = "SELECT p.id AS id,
                     p.name AS name,
@@ -158,11 +155,11 @@ class ReleaseRepository
     /**
      * Get list of recent releases for the given package
      *
-     * @param  string Name of the package
-     * @param  int Number of releases to return
+     * @param  string $packageName
+     * @param  int $max Number of releases to return
      * @return array
      */
-    public function findRecentByPackageName($packageName, $max = MAX_ITEMS_RETURNED)
+    public function findRecentByPackageName($packageName, $max = self::MAX_ITEMS_RETURNED): array
     {
         $sql = "SELECT p.id AS id,
                     p.name AS name,
@@ -192,10 +189,8 @@ class ReleaseRepository
      * release version.
      *
      * @param int $packageId ID of the package.
-     *
-     * @return array
      */
-    public function findDownloads($packageId)
+    public function findDownloads($packageId): array
     {
         $sql = "SELECT f.id AS `id`, f.release AS `release`,
                     f.platform AS platform, f.format AS format,
