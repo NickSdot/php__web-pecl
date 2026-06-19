@@ -26,28 +26,23 @@ namespace App;
 class PackageDll
 {
     /**
-     * Temporary directory for storing cache files.
-     */
-    private $tmpDir;
-
-    /**
      * Build gap defaults to 2 hours.
      */
-    private $build_gap = 7200;
+    private int $build_gap = 7200;
 
     /**
      * Reset period defaults to 1 hour.
      */
-    private $reset_period = 3600;
+    private int $reset_period = 3600;
 
-    private $cacheDbFile;
-    private $lastResetFile;
-    private $cacheResetLockFile;
+    private string $cacheDbFile;
+    private string $lastResetFile;
+    private string $cacheResetLockFile;
 
     /**
      * NOTE when edit here, don't forget to remove the cache file
      */
-    private $zip_name_parts = [
+    private array $zip_name_parts = [
         '8.5' => [
             ['crt' => 'vs17', 'arch' => 'x64'],
             ['crt' => 'vs17', 'arch' => 'x86'],
@@ -108,14 +103,15 @@ class PackageDll
         ],
     ];
 
-    private $ts_only_dlls = ['parallel', 'pthreads'];
+    private array $ts_only_dlls = ['parallel', 'pthreads'];
 
     /**
      * Class constructor.
      */
-    public function __construct($tmpDir)
+    public function __construct(
+        private readonly string $tmpDir
+    )
     {
-        $this->tmpDir = $tmpDir;
         if (!file_exists($tmpDir)) {
             mkdir($tmpDir, 0777, true);
         }
@@ -124,7 +120,7 @@ class PackageDll
         $this->cacheResetLockFile = $this->tmpDir.'/pecl_dll_url_cache_reset.lock.';
     }
 
-    public function resetDllDownloadCache($name)
+    public function resetDllDownloadCache($name): bool
     {
         clearstatcache();
         if (file_exists($this->cacheResetLockFile . md5($name))) {
@@ -198,7 +194,7 @@ class PackageDll
         return $ret;
     }
 
-    public function updateDllDownloadCache($name, $version)
+    public function updateDllDownloadCache($name, $version): bool
     {
         $db = [];
 
@@ -222,7 +218,7 @@ class PackageDll
         return $this->cacheDllDownloadInfo($name, $version, $pkg);
     }
 
-    private function cacheDllDownloadInfo($name, $version, $data)
+    private function cacheDllDownloadInfo($name, $version, $data): bool
     {
         $db = [];
 
@@ -243,7 +239,7 @@ class PackageDll
      * Need always both ts/nts for each branch,
      * except for explicitly listed ts only exts.
      */
-    private function getZipFileList($name, $version)
+    private function getZipFileList($name, $version): array
     {
         $ret = [];
 
@@ -268,11 +264,10 @@ class PackageDll
         return $ret;
     }
 
-    private function fetchDllDownloadUrls($name, $version)
+    private function fetchDllDownloadUrls($name, $version): ?array
     {
         $internalHost = 'downloads.internal.php.net';
         $host = 'downloads.php.net';
-        $port = 80;
         $uri = "/~windows/pecl/releases/" . strtolower($name) . "/" . $version;
         $ret = [];
 
@@ -291,7 +286,7 @@ class PackageDll
         }
 
         foreach ($this->getZipFileList($name, $version) as $branch => $data) {
-            foreach ($data as $arch => $zips) {
+            foreach ($data as $zips) {
                 $branch_ok = true;
 
                 foreach ($zips as $zip) {
@@ -317,10 +312,10 @@ class PackageDll
 
     /**
      * Between the package release and DLL build can be the gap of 30 minutes
-     * (in the best case). Lets give it 2h so we don't cache empty result too
+     * (in the best case). Let's give it 2h so we don't cache empty result too
      * early.
      */
-    private function buildGapOver($date)
+    private function buildGapOver($date): bool
     {
         $dt = date_parse($date);
         $rel_ts = mktime($dt['hour'], $dt['minute'], $dt['second'], $dt['month'], $dt['day'], $dt['year']);
@@ -331,15 +326,12 @@ class PackageDll
     public function makeNiceLinkNameFromZipName($zip_name)
     {
         // Name looks like php_taint-1.1.0-5.4-nts-vc9-x86.zip
-        if (!preg_match(",php_([^-]+)-([a-z0-9\.]+)-([0-9\.]+)-(ts|nts)-(v[cs]\d+)-(x86|x64)\.zip,", $zip_name, $part)) {
+        if (!preg_match(",php_([^-]+)-([a-z0-9.]+)-([0-9.]+)-(ts|nts)-(v[cs]\d+)-(x86|x64)\.zip,", $zip_name, $part)) {
             return $zip_name;
         }
 
-        $name = $part[1];
-        $version = $part[2];
         $branch = $part[3];
         $zts = $part[4];
-        $crt = $part[5];
         $arch = $part[6];
 
         $zts_str = 'ts' == $zts ? "Thread Safe" : "Non Thread Safe";
@@ -347,7 +339,7 @@ class PackageDll
         return "$branch $zts_str (" . strtoupper($zts) . ") $arch";
     }
 
-    public function isResetOverdue($name)
+    public function isResetOverdue($name): bool
     {
         if (!file_exists($this->lastResetFile . md5($name))) {
             file_put_contents($this->lastResetFile . md5($name), 0, LOCK_EX);
