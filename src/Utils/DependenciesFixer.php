@@ -24,14 +24,11 @@ use App\Database;
 use \PEAR_Config as PEAR_Config;
 use \PEAR_PackageFile as PEAR_PackageFile;
 
-class DependenciesFixer
+readonly class DependenciesFixer
 {
-    private $database;
-
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
+    public function __construct(
+        private Database $database
+    ) {}
 
     public function fix()
     {
