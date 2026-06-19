@@ -27,13 +27,17 @@ use Symfony\Component\Dotenv\Dotenv;
 
 /**
  * Service class for running composer scripts when installing application.
+ *
+ * @api Used in composer.json
  */
 class ComposerScripts
 {
     /**
      * Create a default configuration settings for development environment.
+     *
+     * @api Used in composer.json
      */
-    public static function installConfig(Event $event)
+    public static function installConfig(Event $event): void
     {
         $distEnvFile = __DIR__.'/../../.env.dist';
         $targetEnvFile = __DIR__.'/../../.env';
@@ -46,8 +50,10 @@ class ComposerScripts
     /**
      * Create application temporary and upload directories which are not tracked
      * in Git.
+     *
+     * @api Used in composer.json
      */
-    public static function createDirectories(Event $event)
+    public static function createDirectories(Event $event): void
     {
         if (!$event->isDevMode()) {
             return;
