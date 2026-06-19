@@ -29,8 +29,6 @@
 
 namespace App;
 
-use App\Database;
-use App\Karma;
 use App\Entity\User;
 
 /**
@@ -38,24 +36,21 @@ use App\Entity\User;
  */
 class Auth
 {
-    private $database;
-    private $karma;
-    private $user;
-    private $tmpDir;
+    private ?User $user = null;
+    private string $tmpDir = '';
 
     /**
      * Class constructor with dependencies injection.
      */
-    public function __construct(Database $database, Karma $karma)
-    {
-        $this->database = $database;
-        $this->karma = $karma;
-    }
+    public function __construct(
+        private readonly Database $database,
+        private readonly Karma $karma
+    ) {}
 
     /**
      * Sets cookie parameters and start session.
      */
-    public function initSession()
+    public function initSession(): void
     {
         // Extend the session cookie lifetime
         $params = session_get_cookie_params();
@@ -73,15 +68,15 @@ class Auth
     /**
      * Set temporary directory for logs.
      */
-    public function setTmpDir($tmpDir)
+    public function setTmpDir(string $tmpDir): void
     {
         $this->tmpDir = $tmpDir;
     }
 
     /**
-     * Setup the user object.
+     * Set up the user object.
      */
-    public function initUser()
+    public function initUser(): ?User
     {
         if (empty($_SESSION['PECL_USER'])) {
             $this->user = null;
@@ -105,7 +100,7 @@ class Auth
     /**
      * Unset current session and redirect page visitor back to the previous page.
      */
-    public function logout()
+    public function logout(): void
     {
         session_unset();
 
@@ -119,7 +114,7 @@ class Auth
     /**
      * Check if current user is logged in.
      */
-    public function isLoggedIn()
+    public function isLoggedIn(): bool
     {
         if (!$this->user || !$this->user->get('registered')) {
             return false;
@@ -131,26 +126,14 @@ class Auth
     /**
      * Require to be logged in.
      */
-    public function secure($admin = false)
+    public function secure(?bool $admin = null): bool
     {
-        $result = true;
-
         if (!$this->isLoggedIn()) {
             // Exits
             $this->reject();
         }
 
-        $num = func_num_args();
-        for ($i = 0; $i < $num; $i++) {
-            $arg = func_get_arg($i);
-            $result = $this->check($arg);
-
-            if ($result === true) {
-                return true;
-            }
-        }
-
-        if ($result === false) {
+        if ($admin !== null && !$this->check($admin)) {
             response_header("Insufficient Privileges");
             report_error("Insufficient Privileges");
             response_footer();
@@ -162,12 +145,12 @@ class Auth
     }
 
     /**
-     * ACL check for the given $atom, where true means pear.admin, false pear.dev.
+     * ACL check for the given $atom, where true means "pear.admin", false pear.dev.
      * The pear prefix is used here historically from the upstream original
      * pearweb application database schema until migrations in the database can
      * be done.
      */
-    public function check($atom)
+    public function check(string|bool $atom): bool
     {
         // Admins are almighty
         if ($this->user->isAdmin()) {
@@ -176,7 +159,7 @@ class Auth
 
         // Check for backwards compatibility
         if (is_bool($atom)) {
-            if ($atom == true) {
+            if ($atom === true) {
                 $atom = "pear.admin";
             } else {
                 $atom = "pear.dev";
@@ -194,7 +177,7 @@ class Auth
     /**
      * Verify given username and password against the database.
      */
-    public function verify($username, $password)
+    public function verify($username, $password): bool
     {
         if (empty($this->user)) {
             $this->user = new User($this->database, $username);
@@ -276,12 +259,8 @@ class Auth
     /**
      * Reject given location.
      */
-    public function reject($message = null)
+    public function reject(string $message = 'Please enter your username and password:'): void
     {
-        if ($message === null) {
-            $message = 'Please enter your username and password:';
-        }
-
         response_header('Login');
 
         $GLOBALS['ONLOAD'] = "document.login.PECL_USER.focus();";
