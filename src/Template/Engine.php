@@ -92,8 +92,6 @@ class Engine
      * Renders given template file and populates its scope with variables
      * provided as array elements. Each array key is a variable name in template
      * scope and array item value is set as a variable value.
-     *
-     * @throws \Exception
      */
     public function render(string $template, array $variables = []): string
     {
