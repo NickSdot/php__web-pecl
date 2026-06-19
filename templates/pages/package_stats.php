@@ -1,4 +1,10 @@
-<?php $this->extend('layout.php', ['title' => 'Package Statistics']) ?>
+<?php
+/**
+ * @var App\Repository\PackageStatsRepository $packageStatsRepository
+ */
+
+$this->extend('layout.php', ['title' => 'Package Statistics'])
+?>
 
 <?php $this->start('content') ?>
 

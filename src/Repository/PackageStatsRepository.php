@@ -25,32 +25,26 @@
 namespace App\Repository;
 
 use App\Database;
+use PDO;
 
 /**
  * Statistics repository class for retrieving package_stats results.
  */
-class PackageStatsRepository
+readonly class PackageStatsRepository
 {
-    /**
-     * Database handle.
-     */
-    private $database;
-
     /**
      * Class constructor.
      */
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
-
+    public function __construct(
+        private Database $database
+    ) {}
     /**
      * Get total number of package downloads.
      *
-     * @param  integer ID of the package
+     * @param  int $id ID of the package
      * @return array
      */
-    public function getDownloadsByPackageId($id)
+    public function getDownloadsByPackageId($id): array
     {
         $sql = "SELECT
                     SUM(dl_number) AS downloads
@@ -59,7 +53,7 @@ class PackageStatsRepository
         ";
 
         $statement = $this->database->run($sql, [':pid' => $id]);
-        $result = $statement->fetch(\PDO::FETCH_ASSOC);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         return $result['downloads'];
     }
@@ -67,7 +61,7 @@ class PackageStatsRepository
     /**
      * Get statistics for releases.
      */
-    public function getReleasesStats($packageId, $releaseId = null)
+    public function getReleasesStats($packageId, $releaseId = null): array
     {
         $sql = "SELECT
                     s.release,
@@ -90,6 +84,6 @@ class PackageStatsRepository
 
         $statement = $this->database->run($sql, $arguments);
 
-        return $statement->fetchAll(\PDO::FETCH_ASSOC);
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 }
