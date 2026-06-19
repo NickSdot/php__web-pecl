@@ -34,14 +34,14 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 class GenerateFixturesCommand extends Command
 {
-    private $database;
-    private $config;
-    private $fixtures;
+    private Database $database;
+    private Config $config;
+    private AppFixtures $fixtures;
 
     /**
      * Set database handler dependency.
      */
-    public function setDatabase(Database $database)
+    public function setDatabase(Database $database): void
     {
         $this->database = $database;
     }
@@ -49,12 +49,12 @@ class GenerateFixturesCommand extends Command
     /**
      * Set configuration dependency.
      */
-    public function setConfig(Config $config)
+    public function setConfig(Config $config): void
     {
         $this->config = $config;
     }
 
-    public function setFixtures(AppFixtures $fixtures)
+    public function setFixtures(AppFixtures $fixtures): void
     {
         $this->fixtures = $fixtures;
     }
