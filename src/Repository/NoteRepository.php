@@ -25,25 +25,19 @@ use App\Database;
 /**
  * Repository class for retrieving user notes.
  */
-class NoteRepository
+readonly class NoteRepository
 {
-    /**
-     * Database handle.
-     */
-    private $database;
-
     /**
      * Class constructor.
      */
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
+    public function __construct(
+        private Database $database
+    ) {}
 
     /**
      * Get all notes by given username.
      */
-    public function getNotesByUser($user)
+    public function getNotesByUser($user): array
     {
         $sql = 'SELECT id, nby, ntime, note FROM notes WHERE uid = :uid ORDER BY ntime';
 
