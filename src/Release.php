@@ -25,10 +25,8 @@
 namespace App;
 
 use App\Entity\Package;
-use App\User;
-use App\Database;
-use App\Rest;
 use App\Utils\Extractor;
+use PDOException;
 use \PEAR as PEAR;
 use \PEAR_PackageFile as PEAR_PackageFile;
 use \PEAR_Config as PEAR_Config;
@@ -47,17 +45,17 @@ class Release
     /**
      * Valid dependency types.
      */
-    const DEPENDENCY_TYPES = ['pkg', 'ext', 'php', 'prog', 'ldlib', 'rtlib', 'os', 'websrv', 'sapi'];
+    const array DEPENDENCY_TYPES = ['pkg', 'ext', 'php', 'prog', 'ldlib', 'rtlib', 'os', 'websrv', 'sapi'];
 
     /**
      * Valid dependency relations.
      */
-    const DEPENDENCY_RELATIONS = ['has', 'eq', 'lt', 'le', 'gt', 'ge', 'not', 'ne'];
+    const array DEPENDENCY_RELATIONS = ['has', 'eq', 'lt', 'le', 'gt', 'ge', 'not', 'ne'];
 
     /**
      * Set database handler.
      */
-    public function setDatabase(Database $database)
+    public function setDatabase(Database $database): void
     {
         $this->database = $database;
     }
@@ -65,7 +63,7 @@ class Release
     /**
      * Set the auth user.
      */
-    public function setAuthUser($authUser)
+    public function setAuthUser($authUser): void
     {
         $this->authUser = $authUser;
     }
@@ -73,7 +71,7 @@ class Release
     /**
      * Set REST generator.
      */
-    public function setRest(Rest $rest)
+    public function setRest(Rest $rest): void
     {
         $this->rest = $rest;
     }
@@ -81,7 +79,7 @@ class Release
     /**
      * Set directory where to upload packages.
      */
-    public function setPackagesDir($dir)
+    public function setPackagesDir($dir): void
     {
         $this->packagesDir = $dir;
     }
@@ -89,7 +87,7 @@ class Release
     /**
      * Set package entity.
      */
-    public function setPackage(Package $package)
+    public function setPackage(Package $package): void
     {
         $this->package = $package;
     }
@@ -97,12 +95,12 @@ class Release
     /**
      * Upload new release.
      *
-     * @param string Name of the package
-     * @param string Version string
-     * @param string State of the release
-     * @param string Release notes
-     * @param string Filename of the release tarball
-     * @param string MD5 checksum of the tarball
+     * @param string $package Name of the package
+     * @param string $version Version string
+     * @param string $state State of the release
+     * @param string $relnotes Release notes
+     * @param string $tarball Filename of the release tarball
+     * @param string $md5sum MD5 checksum of the tarball
      */
     public function upload($package, $version, $state, $relnotes, $tarball, $md5sum)
     {
@@ -210,16 +208,16 @@ class Release
     /**
      * Confirm release upload
      *
-     * @param string Package name
-     * @param string Package version
-     * @param string Package state
-     * @param string Release notes
-     * @param string md5
-     * @param int    Package id from database
-     * @param string package contents
+     * @param string $package Package name
+     * @param string $version Package version
+     * @param string $state Package state
+     * @param string $relnotes Release notes
+     * @param string $md5sum
+     * @param int    $package_id Package id from database
+     * @param string $file package contents
      * @return string  the file name of the upload or PEAR_Error object if problems
      */
-    private function confirmUpload($package, $version, $state, $relnotes, $md5sum, $package_id, $file)
+    private function confirmUpload($package, $version, $state, $relnotes, $md5sum, $package_id, $file): string
     {
         $extractor = new Extractor($file);
 
@@ -250,13 +248,11 @@ class Release
         $release_id = (!$id) ? 1 : $id + 1;
 
         try {
-            $statement = $this->database->run($sql, [$release_id, $package_id, $version, $state, $this->authUser->handle, $relnotes]);
-        } catch (\PDOException $e) {
+            $this->database->run($sql, [$release_id, $package_id, $version, $state, $this->authUser->handle, $relnotes]);
+        } catch (PDOException $e) {
             @unlink($file);
 
-            $res = PEAR::raiseError('Could not insert file information: '. $e->getMessage());
-
-            return $res;
+            return PEAR::raiseError('Could not insert file information: '. $e->getMessage());
         }
 
         // Update files table
@@ -272,14 +268,12 @@ class Release
         // using transaction (and add newer MySQL version as a peclweb requirement)
         try {
             $this->database->run($sql, [$file_id, $package_id, $release_id, $md5sum, basename($file), $file, $packagexml]);
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             $this->database->run('DELETE FROM releases WHERE id = ?', [$release_id]);
 
             @unlink($file);
 
-            $res = PEAR::raiseError('Could not insert file information: '. $e->getMessage());
-
-            return $res;
+            return PEAR::raiseError('Could not insert file information: '. $e->getMessage());
         }
 
         // Update dependency table
@@ -428,10 +422,10 @@ class Release
     /**
      * Download release via HTTP
      *
-     * @param string Name of the package
-     * @param string Version string
-     * @param string Filename
-     * @param boolean Uncompress file before downloading?
+     * @param string $package Name of the package
+     * @param string|null $version Version string
+     * @param string|null $file Filename
+     * @param bool $uncompress Uncompress file before downloading?
      * @return mixed
      */
     public function HTTPdownload($package, $version = null, $file = null, $uncompress = false)
@@ -451,7 +445,7 @@ class Release
         if ($file !== null) {
             $basename = substr($file, 0, -4);
 
-            if (substr($file, -4) == '.tar') {
+            if (str_ends_with($file, '.tar')) {
                 $file =  $basename . '.tgz';
                 $uncompress = true;
             }
@@ -485,7 +479,6 @@ class Release
 
             if (!$row) {
                 return PEAR::raiseError("$package does not have any releases with state \"$version\"");
-                return null;
             }
 
             $release_id = $row['id'];
@@ -547,15 +540,16 @@ class Release
 
         header('HTTP/1.0 404 Not Found');
         print 'File not found';
+
+        return null;
     }
 
     /**
      * Determine if release state is valid
      *
-     * @param string State
-     * @return boolean
+     * @param string $state State
      */
-    private function isValidState($state)
+    private function isValidState($state): bool
     {
         $states = ['devel', 'snapshot', 'alpha', 'beta', 'stable'];
 
@@ -565,11 +559,10 @@ class Release
     /**
      * Log release download
      *
-     * @param integer ID of the package
-     * @param integer ID of the release
-     * @param string Filename
+     * @param int $package ID of the package
+     * @param int $release_id ID of the release
      */
-    private function logDownload($package, $release_id)
+    private function logDownload($package, $release_id): void
     {
         $sql = 'INSERT INTO aggregated_package_stats
                 (package_id, release_id, yearmonth, downloads)
@@ -659,8 +652,8 @@ Authors
     /**
      * Remove release
      *
-     * @param integer ID of the package
-     * @param integer ID of the release
+     * @param int $package ID of the package
+     * @param int $release ID of the release
      */
     public function remove($package, $release)
     {
