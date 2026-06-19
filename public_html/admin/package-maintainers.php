@@ -22,6 +22,8 @@ use App\BorderBox;
 use App\Repository\UserRepository;
 use App\Repository\PackageRepository;
 
+require_once __DIR__.'/../../include/pear-prepend.php';
+
 $userRepository = new UserRepository($database);
 
 response_header("PECL Administration - Package maintainers");

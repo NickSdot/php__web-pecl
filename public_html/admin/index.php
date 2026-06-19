@@ -23,6 +23,8 @@ use App\Entity\Note;
 use App\Entity\User as UserEntity;
 use App\User;
 
+require_once __DIR__.'/../../include/pear-prepend.php';
+
 $auth->secure(true);
 
 if (!empty($_GET['phpinfo'])) {

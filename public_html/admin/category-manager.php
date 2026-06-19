@@ -30,6 +30,8 @@ use App\TreeMenu\TreeMenu;
 use App\TreeMenu\TreeNode;
 use App\TreeMenu\DynamicHtml;
 
+require_once __DIR__.'/../../include/pear-prepend.php';
+
 $auth->secure(true);
 
 $category = $container->get(Category::class);
