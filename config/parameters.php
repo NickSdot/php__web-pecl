@@ -20,8 +20,9 @@
 
 /**
  * Application configuration parameters.
+ *
+ * @var \App\Config $config
  */
-
 return [
     'db_host' => $config->get('db_host'),
     'db_name' => $config->get('db_name'),

@@ -31,20 +31,20 @@ return [
     /**
      * REST static files directory
      */
-    'rest_dir' => isset($_SERVER['PEAR_REST_DIR']) ? $_SERVER['PEAR_REST_DIR'] : '/var/lib/peclweb/rest',
+    'rest_dir' => $_SERVER['PEAR_REST_DIR'] ?? '/var/lib/peclweb/rest',
 
     /**
      * Temporary generated application files
      */
-    'tmp_dir' => isset($_SERVER['PECL_TMP_DIR']) ? $_SERVER['PECL_TMP_DIR'] : '/var/tmp/pear',
+    'tmp_dir' => $_SERVER['PECL_TMP_DIR'] ?? '/var/tmp/pear',
 
     /**
      * Temporary directory for uploaded files
      */
-    'tmp_uploads_dir' => isset($_SERVER['PECL_TMP_UPLOADS_DIR']) ? $_SERVER['PECL_TMP_UPLOADS_DIR'] : '/var/tmp/pear/uploads',
+    'tmp_uploads_dir' => $_SERVER['PECL_TMP_UPLOADS_DIR'] ?? '/var/tmp/pear/uploads',
 
     /**
      * Packages directory
      */
-    'packages_dir' => isset($_SERVER['PECL_PACKAGES_DIR']) ? $_SERVER['PECL_PACKAGES_DIR'] : '/var/lib/pear',
+    'packages_dir' => $_SERVER['PECL_PACKAGES_DIR'] ?? '/var/lib/pear',
 ];

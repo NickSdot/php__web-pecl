@@ -34,71 +34,71 @@ return [
     /**
      * Application environment (dev for development, prod for production.)
      */
-    'env' => isset($_SERVER['PECL_ENV']) ? $_SERVER['PECL_ENV'] : 'prod',
+    'env' => $_SERVER['PECL_ENV'] ?? 'prod',
 
     /**
      * PECL channel URL scheme (http or https)
      */
-    'scheme' => isset($_SERVER['PECL_SCHEME']) ? $_SERVER['PECL_SCHEME'] : 'https',
+    'scheme' => $_SERVER['PECL_SCHEME'] ?? 'https',
 
     /**
      * PECL channel URL host (domain name)
      */
-    'host' => isset($_SERVER['PECL_HOST']) ? $_SERVER['PECL_HOST'] : 'pecl.php.net',
+    'host' => $_SERVER['PECL_HOST'] ?? 'pecl.php.net',
 
     /**
      * Database username
      */
-    'db_username' => isset($_SERVER['PECL_DB_USERNAME']) ? $_SERVER['PECL_DB_USERNAME'] : 'nobody',
+    'db_username' => $_SERVER['PECL_DB_USERNAME'] ?? 'nobody',
 
     /**
      * Database password
      */
-    'db_password' => isset($_SERVER['PECL_DB_PASSWORD']) ? $_SERVER['PECL_DB_PASSWORD'] : 'password',
+    'db_password' => $_SERVER['PECL_DB_PASSWORD'] ?? 'password',
 
     /**
      * Database name
      */
-    'db_name' => isset($_SERVER['PECL_DB_NAME']) ? $_SERVER['PECL_DB_NAME'] : 'pecl',
+    'db_name' => $_SERVER['PECL_DB_NAME'] ?? 'pecl',
 
     /**
      * Database host
      */
-    'db_host' => isset($_SERVER['PECL_DB_HOST']) ? $_SERVER['PECL_DB_HOST'] : 'localhost',
+    'db_host' => $_SERVER['PECL_DB_HOST'] ?? 'localhost',
 
     /**
      * Database DSN string. Optional and can be overridden by the environment
      * variable. Setting the DSN string also overrides other db_* values. Naming
      * PEAR_DATABASE_DSN key is used historically until production can be changed.
      */
-    'db_dsn' => isset($_SERVER['PEAR_DATABASE_DSN']) ? $_SERVER['PEAR_DATABASE_DSN'] : '',
+    'db_dsn' => $_SERVER['PEAR_DATABASE_DSN'] ?? '',
 
     /**
      * REST static files directory. The PEAR_ prefix for the key is used
      * historically from the pearweb application until production can be updated.
      */
-    'rest_dir' => isset($_SERVER['PEAR_REST_DIR']) ? $_SERVER['PEAR_REST_DIR'] : __DIR__.'/../public_html/rest',
+    'rest_dir' => $_SERVER['PEAR_REST_DIR'] ?? __DIR__ . '/../public_html/rest',
 
     /**
      * Temporary generated application files
      */
-    'tmp_dir' => isset($_SERVER['PECL_TMP_DIR']) ? $_SERVER['PECL_TMP_DIR'] : __DIR__.'/../var',
+    'tmp_dir' => $_SERVER['PECL_TMP_DIR'] ?? __DIR__ . '/../var',
 
     /**
      * Temporary directory for uploaded files
      */
-    'tmp_uploads_dir' => isset($_SERVER['PECL_TMP_UPLOADS_DIR']) ? $_SERVER['PECL_TMP_UPLOADS_DIR'] : __DIR__.'/../var/uploads',
+    'tmp_uploads_dir' => $_SERVER['PECL_TMP_UPLOADS_DIR'] ?? __DIR__ . '/../var/uploads',
 
     /**
      * Path where new PECL account requests are sent when requesting also PHP.net
      * account.
      */
-    'php_master_api_url' => isset($_SERVER['PECL_MASTER_API_URL']) ? $_SERVER['PECL_MASTER_API_URL'] : 'https://main.php.net/entry/svn-account.php',
+    'php_master_api_url' => $_SERVER['PECL_MASTER_API_URL'] ?? 'https://main.php.net/entry/svn-account.php',
 
     /**
      * Packages directory
      */
-    'packages_dir' => isset($_SERVER['PECL_PACKAGES_DIR']) ? $_SERVER['PECL_PACKAGES_DIR'] : __DIR__.'/../public_html/packages',
+    'packages_dir' => $_SERVER['PECL_PACKAGES_DIR'] ?? __DIR__ . '/../public_html/packages',
 
     /**
      * Regex pattern for matching valid PECL accounts usernames
@@ -115,7 +115,7 @@ return [
     /**
      * Maximum upload file size for tar gzip archive files in bytes. If the INI
      * directive upload_max_filesize is less than this setting, the INI
-     * directive will be used. Also the default PHP INI directives need to be
+     * directive will be used. Also, the default PHP INI directives need to be
      * adjusted (upload_max_filesize and max_post_size) accordingly. Set the
      * max_post_size slightly greater than upload_max_filesize ini directive.
      * For example, 18M and 16M.
