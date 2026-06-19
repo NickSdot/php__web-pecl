@@ -25,49 +25,40 @@ use App\Database;
 use App\Entity\Category;
 use App\Entity\Package;
 use Faker\Generator;
+use PDO;
 
 /**
  * Data fixtures for database. It uses Faker library for generating fixtures
  * data.
  */
-class AppFixtures
+readonly class AppFixtures
 {
-    private $database;
-    private $category;
-    private $package;
-
     /**
-     * Faker utility.
+     * Number of generated users.
      */
-    private $faker;
+    private const int PACKAGES_COUNT = 1000;
 
     /**
      * Number of generated users.
      */
-    private const PACKAGES_COUNT = 1000;
-
-    /**
-     * Number of generated users.
-     */
-    private const USERS_COUNT = 500;
+    private const int USERS_COUNT = 500;
 
     /**
      * Class constructor to set injected dependencies.
      */
-    public function __construct(Database $database, Generator $faker, Category $category, Package $package)
-    {
-        $this->database = $database;
-        $this->faker = $faker;
-        $this->category = $category;
-        $this->package = $package;
-    }
+    public function __construct(
+        private Database $database,
+        private Generator $faker,
+        private Category $category,
+        private Package $package
+    ) {}
 
     /**
      * Insert data in the categories tables.
      */
-    public function insertCategories()
+    public function insertCategories(): void
     {
-        $catids = [];
+        $catIds = [];
         foreach ($this->getCategories() as $key => $item) {
             if (is_array($item)) {
                 $name = $key;
@@ -80,23 +71,23 @@ class AppFixtures
             }
 
             if (!empty($parent)) {
-                $parent = $catids[$parent];
+                $parent = $catIds[$parent];
             }
 
-            $catid = $this->category->add([
+            $catId = $this->category->add([
                 'name' => $name,
                 'description' => $description,
                 'parent' => $parent,
             ]);
 
-            $catids[$name] = $catid;
+            $catIds[$name] = $catId;
         }
     }
 
     /**
      * Insert fixtures in users table.
      */
-    public function insertUsers()
+    public function insertUsers(): void
     {
         $sql = "INSERT INTO users (
                     handle,
@@ -142,10 +133,10 @@ class AppFixtures
     /**
      * Insert data into packages table.
      */
-    public function insertPackages()
+    public function insertPackages(): void
     {
-        $categories = $this->database->run("SELECT id, name FROM categories")->fetchAll(\PDO::FETCH_KEY_PAIR);
-        $users = $this->database->run("SELECT handle, name FROM users")->fetchAll(\PDO::FETCH_KEY_PAIR);
+        $categories = $this->database->run("SELECT id, name FROM categories")->fetchAll(PDO::FETCH_KEY_PAIR);
+        $users = $this->database->run("SELECT handle, name FROM users")->fetchAll(PDO::FETCH_KEY_PAIR);
 
         for ($i = 1; $i < self::PACKAGES_COUNT; $i++) {
             $this->package->add([
@@ -154,8 +145,8 @@ class AppFixtures
                 'license'     => 'PHP License',
                 'summary'     => $this->faker->sentence,
                 'description' => $this->faker->text,
-                'category'    => array_rand($categories, 1),
-                'lead'        => array_rand($users, 1),
+                'category'    => array_rand($categories),
+                'lead'        => array_rand($users),
             ]);
         }
     }
@@ -163,7 +154,7 @@ class AppFixtures
     /**
      * Categories.
      */
-    public function getCategories()
+    public function getCategories(): array
     {
         return [
             'Authentication',
@@ -228,7 +219,7 @@ class AppFixtures
      * Get generated demo users data with each user having secret password set to
      * "password".
      */
-    public function getUsers()
+    public function getUsers(): array
     {
         $users = [];
 
