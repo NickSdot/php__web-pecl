@@ -7,32 +7,22 @@ use App\Database;
 /**
  * Breadcrumbs generator for packages and categories.
  */
-class Breadcrumbs
+readonly class Breadcrumbs
 {
-    /**
-     * Database handler.
-     *
-     * @var Database
-     */
-    private $database;
-
     /**
      * Class constructor.
      */
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
+    public function __construct(
+        private Database $database
+    ) {}
 
     /**
      * Get breadcrumbs for categories and packages.
      * Top Level :: Multimedia :: Audio :: FliteTTS
      *
      * @param int $id
-     * @param bool $isLastLink If the last category should or not be a link
-     * @return string
      */
-    public function getBreadcrumbs($id, $isLastLink = false)
+    public function getBreadcrumbs($id, bool $isLastLink = false): string
     {
         $html = '<a href="/packages.php">Top Level</a>';
 
