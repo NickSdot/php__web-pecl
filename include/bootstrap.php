@@ -85,7 +85,11 @@ if ($config->get('env') === 'dev') {
 // Set application default time zone to UTC for all dates.
 date_default_timezone_set('UTC');
 
-// Initialize dependency injection container
+/**
+ * Initialize dependency injection container
+ *
+ * @var \App\Container\Container $container
+ */
 $container = require_once __DIR__.'/../config/container.php';
 
 // Database access with PDO enabled endpoints
