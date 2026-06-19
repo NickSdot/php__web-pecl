@@ -20,6 +20,8 @@
 
 namespace App\Utils;
 
+use Exception;
+
 /**
  * A basic upload service class for uploading files via HTML forms.
  */
@@ -28,22 +30,22 @@ class Uploader
     /**
      * Maximum allowed file size in bytes.
      */
-    private $maxFileSize = 2 * 1024 * 1024;
+    private int $maxFileSize = 2 * 1024 * 1024;
 
     /**
      * Valid file extension.
      */
-    private $validExtension;
+    private string $validExtension;
 
     /**
      * Destination directory.
      */
-    private $dir;
+    private string $dir;
 
     /**
      * Set the maximum allowed file size in bytes.
      */
-    public function setMaxFileSize($maxFileSize)
+    public function setMaxFileSize(int $maxFileSize): void
     {
         $this->maxFileSize = $maxFileSize;
     }
@@ -51,7 +53,7 @@ class Uploader
     /**
      * Set allowed file extension without leading dot. For example, 'tgz'.
      */
-    public function setValidExtension($validExtension)
+    public function setValidExtension(string $validExtension): void
     {
         $this->validExtension = $validExtension;
     }
@@ -59,7 +61,7 @@ class Uploader
     /**
      * Set destination directory.
      */
-    public function setDir($dir)
+    public function setDir(string $dir): void
     {
         $this->dir = $dir;
     }
@@ -67,9 +69,9 @@ class Uploader
     /**
      * Upload file.
      */
-    public function upload($key)
+    public function upload($key): string
     {
-        $files = isset($_FILES[$key]) ? $_FILES[$key] : [];
+        $files = $_FILES[$key] ?? [];
 
         // Check if uploaded file size exceeds the ini post_max_size directive.
         if(
@@ -79,29 +81,29 @@ class Uploader
             && strtolower($_SERVER['REQUEST_METHOD']) === 'post'
         ) {
             $max = ini_get('post_max_size');
-            throw new \Exception('Error on upload: Exceeded POST content length server limit of '.$max);
+            throw new Exception('Error on upload: Exceeded POST content length server limit of '.$max);
         }
 
         // Some other upload error happened
         if (empty($files) || $files['error'] !== UPLOAD_ERR_OK) {
-            throw new \Exception('Error on upload: Something went wrong. Error code: '.$files['error']);
+            throw new Exception('Error on upload: Something went wrong. Error code: '.$files['error']);
         }
 
         // Be sure we're dealing with an upload
         if ($this->isUploadedFile($files['tmp_name']) === false) {
-            throw new \Exception('Error on upload: Invalid file definition');
+            throw new Exception('Error on upload: Invalid file definition');
         }
 
         // Check file extension
         $uploadedName = $files['name'];
         $ext = $this->getFileExtension($uploadedName);
         if (isset($this->validExtension) && $ext !== $this->validExtension) {
-            throw new \Exception('Error on upload: Invalid file extension. Should be .'.$this->validExtension);
+            throw new Exception('Error on upload: Invalid file extension. Should be .'.$this->validExtension);
         }
 
         // Check file size
         if ($files['size'] > $this->maxFileSize) {
-            throw new \Exception('Error on upload: Exceeded file size limit '.$this->maxFileSize.' bytes');
+            throw new Exception('Error on upload: Exceeded file size limit '.$this->maxFileSize.' bytes');
         }
 
         // Rename the uploaded file
@@ -109,7 +111,7 @@ class Uploader
 
         // Move uploaded file to final destination
         if (!$this->moveUploadedFile($files['tmp_name'], $destination)) {
-            throw new \Exception('Error on upload: Something went wrong');
+            throw new Exception('Error on upload: Something went wrong');
         }
 
         return $destination;
@@ -120,7 +122,7 @@ class Uploader
      * into a separate method for convenience of testing it via phpunit and using
      * a mock.
      */
-    protected function isUploadedFile($file)
+    protected function isUploadedFile($file): bool
     {
         return is_uploaded_file($file);
     }
@@ -129,7 +131,7 @@ class Uploader
      * Move uploaded file to destination. This method is wrapping PHP function
      * to allow testing with PHPUnit and creating a mock object.
      */
-    protected function moveUploadedFile($source, $destination)
+    protected function moveUploadedFile($source, $destination): bool
     {
         return move_uploaded_file($source, $destination);
     }
@@ -137,7 +139,7 @@ class Uploader
     /**
      * Rename file to a unique name.
      */
-    protected function renameFile($filename)
+    protected function renameFile($filename): string
     {
         $ext = $this->getFileExtension($filename);
 
@@ -158,7 +160,7 @@ class Uploader
     /**
      * Returns file extension without a leading dot.
      */
-    protected function getFileExtension($filename)
+    protected function getFileExtension($filename): string
     {
         return strtolower(substr($filename, strripos($filename, '.') + 1));
     }
