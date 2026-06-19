@@ -42,12 +42,7 @@ $generateFixturesCommand = new GenerateFixturesCommand();
 $generateFixturesCommand->setDatabase($database);
 $generateFixturesCommand->setConfig($config);
 
-$fixtures = new AppFixtures(
-    $database,
-    Factory::create(),
-    $container->get(Category::class),
-    $packageEntity
-);
+$fixtures = new AppFixtures($database, Factory::create(), $container->get(Category::class), $packageEntity);
 
 $generateFixturesCommand->setFixtures($fixtures);
 
