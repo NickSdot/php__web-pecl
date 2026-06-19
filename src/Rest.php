@@ -20,8 +20,6 @@
 
 namespace App;
 
-use App\Database;
-use App\Entity\Package;
 use App\Repository\CategoryRepository;
 use App\Repository\PackageRepository;
 use App\Repository\UserRepository;
@@ -36,27 +34,24 @@ use \PEAR_PackageFile_Parser_v2 as PEAR_PackageFile_Parser_v2;
 class Rest
 {
     private $dir;
-    private $database;
-    private $filesystem;
     private $scheme = 'http';
     private $host;
-    private $categoryRepository;
-    private $packageRepository;
-    private $userRepository;
+    private CategoryRepository $categoryRepository;
+    private PackageRepository $packageRepository;
+    private UserRepository $userRepository;
 
     /**
      * Class constructor with injected dependencies.
      */
-    public function __construct(Database $database, Filesystem $filesystem)
-    {
-        $this->database = $database;
-        $this->filesystem = $filesystem;
-    }
+    public function __construct(
+        private readonly Database $database,
+        private readonly Filesystem $filesystem
+    ) {}
 
     /**
      * Set where to generate XML files.
      */
-    public function setDirectory($dir)
+    public function setDirectory($dir): void
     {
         $this->dir = $dir;
     }
@@ -64,7 +59,7 @@ class Rest
     /**
      * Set the scheme of the URL (http or https).
      */
-    public function setScheme($scheme)
+    public function setScheme($scheme): void
     {
         $this->scheme = $scheme;
     }
@@ -72,7 +67,7 @@ class Rest
     /**
      * Set the host of the URL for linking to packages.
      */
-    public function setHost($host)
+    public function setHost($host): void
     {
         $this->host = $host;
     }
@@ -80,7 +75,7 @@ class Rest
     /**
      * Set categories repository.
      */
-    public function setCategoryRepository(CategoryRepository $categoryRepository)
+    public function setCategoryRepository(CategoryRepository $categoryRepository): void
     {
         $this->categoryRepository = $categoryRepository;
     }
@@ -88,7 +83,7 @@ class Rest
     /**
      * Set packages repository.
      */
-    public function setPackageRepository(PackageRepository $packageRepository)
+    public function setPackageRepository(PackageRepository $packageRepository): void
     {
         $this->packageRepository = $packageRepository;
     }
@@ -96,7 +91,7 @@ class Rest
     /**
      * Set users repository.
      */
-    public function setUserRepository(UserRepository $userRepository)
+    public function setUserRepository(UserRepository $userRepository): void
     {
         $this->userRepository = $userRepository;
     }
@@ -104,7 +99,7 @@ class Rest
     /**
      * Regenerate all categories info.
      */
-    public function saveAllCategories()
+    public function saveAllCategories(): void
     {
         $extra = '/rest/';
         $cdir = $this->dir.'/c';
@@ -140,7 +135,7 @@ class Rest
     /**
      * Save category info.
      */
-    public function saveCategory($category)
+    public function saveCategory($category): void
     {
         $extra = '/rest/';
         $cdir = $this->dir.'/c';
@@ -202,7 +197,7 @@ class Rest
     /**
      * Regenerate packages category info.
      */
-    public function savePackagesCategory($categoryName)
+    public function savePackagesCategory($categoryName): void
     {
         $cdir = $this->dir.'/c';
 
@@ -215,7 +210,7 @@ class Rest
 
         $packages = $this->packageRepository->findAllByCategoryName($categoryName);
 
-        $fullpackageinfo = '<?xml version="1.0" encoding="UTF-8" ?>
+        $fullPackageInfo = '<?xml version="1.0" encoding="UTF-8" ?>
 <f xmlns="http://pear.php.net/dtd/rest.categorypackageinfo"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -228,13 +223,13 @@ class Rest
                 continue;
             }
 
-            $fullpackageinfo .= '<pi>
+            $fullPackageInfo .= '<pi>
 ';
             $contents = file_get_contents($pdir.'/'.strtolower($package['name']).'/info.xml');
-            $fullpackageinfo .= '<p>' . substr($contents, strpos($contents, '<n>'));
+            $fullPackageInfo .= '<p>' . substr($contents, strpos($contents, '<n>'));
 
             if (file_exists($rdir.'/'.strtolower($package['name']).'/allreleases.xml')) {
-                $fullpackageinfo .= str_replace(
+                $fullPackageInfo .= str_replace(
                     $this->getAllReleasesRESTProlog($package['name']), '
 <a>
 ',
@@ -243,9 +238,9 @@ class Rest
                 $dirhandle = opendir($rdir.'/'.strtolower($package['name']));
 
                 while (false !== ($entry = readdir($dirhandle))) {
-                    if (strpos($entry, 'deps.') === 0) {
+                    if (str_starts_with($entry, 'deps.')) {
                         $version = str_replace(['deps.', '.txt'], ['', ''], $entry);
-                        $fullpackageinfo .= '
+                        $fullPackageInfo .= '
 <deps>
  <v>' . $version . '</v>
  <d>'.htmlspecialchars(mb_convert_encoding(file_get_contents($rdir.'/'.strtolower($package['name']).'/'.$entry), 'UTF-8', 'ISO-8859-1')).'</d>
@@ -254,10 +249,10 @@ class Rest
                     }
                 }
             }
-            $fullpackageinfo .= '</pi>
+            $fullPackageInfo .= '</pi>
 ';
         }
-        $fullpackageinfo .= '</f>';
+        $fullPackageInfo .= '</f>';
 
         // List packages in a category
         $categoryDir = $cdir.'/'.urlencode($categoryName);
@@ -267,14 +262,14 @@ class Rest
             @chmod($categoryDir, 0777);
         }
 
-        file_put_contents($categoryDir.'/packagesinfo.xml', $fullpackageinfo);
+        file_put_contents($categoryDir.'/packagesinfo.xml', $fullPackageInfo);
         @chmod($categoryDir.'/packagesinfo.xml', 0666);
     }
 
     /**
      * Delete category info.
      */
-    public function deleteCategory($category)
+    public function deleteCategory($category): void
     {
         $cdir = $this->dir.'/c';
 
@@ -289,7 +284,7 @@ class Rest
     /**
      * Regenerate all packages info.
      */
-    public function saveAllPackages()
+    public function saveAllPackages(): void
     {
         $pdir = $this->dir.'/p';
 
@@ -322,7 +317,7 @@ class Rest
     /**
      * Return the XML prolog.
      */
-    private function getPackageProlog()
+    private function getPackageProlog(): string
     {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" .
 "<p xmlns=\"http://pear.php.net/dtd/rest.package\"" .
@@ -335,7 +330,7 @@ class Rest
     /**
      * Save package info.
      */
-    public function savePackage($package)
+    public function savePackage($package): void
     {
         $extra = '/rest/';
         $package = $this->packageRepository->find($package);
@@ -394,7 +389,7 @@ class Rest
     /**
      * Remove package info.
      */
-    public function deletePackage($package)
+    public function deletePackage($package): void
     {
         if (!$package) {
             // Don't delete the entire package/release info.
@@ -409,7 +404,7 @@ class Rest
         $this->filesystem->delete($rdir.'/'.$package);
     }
 
-    private function getAllReleasesRESTProlog($package)
+    private function getAllReleasesRESTProlog($package): string
     {
         return '<?xml version="1.0" encoding="UTF-8" ?>' . "\n" .
 '<a xmlns="http://pear.php.net/dtd/rest.allreleases"' . "\n" .
@@ -425,7 +420,6 @@ class Rest
      */
     public function saveAllReleases($package)
     {
-        $extra = '/rest/';
         $pid = $this->packageRepository->find($package, 'id');
         $releases = $this->database->run('SELECT * FROM releases WHERE package = ? ORDER BY releasedate DESC', [$pid])->fetchAll();
         $rdir = $this->dir.'/r';
@@ -551,7 +545,7 @@ class Rest
     /**
      * Regenerate info by removing release information.
      */
-    public function deleteRelease($package, $version)
+    public function deleteRelease($package, $version): void
     {
         $rdir = $this->dir.'/r';
 
@@ -565,7 +559,7 @@ class Rest
     /**
      * Regenerate release info.
      */
-    public function saveRelease($filepath, $packagexml, $pkgobj, $releasedby, $id)
+    public function saveRelease($filepath, $packagexml, $pkgobj, $releasedby, $id): void
     {
         $extra = '/rest/';
         $rdir = $this->dir.'/r';
@@ -614,7 +608,7 @@ class Rest
         @chmod($packageDir.'/deps.'.$pkgobj->getVersion().'.txt', 0666);
     }
 
-    public function deleteMaintainerREST($handle)
+    public function deleteMaintainerREST($handle): void
     {
         $mdir = $this->dir.'/m';
 
@@ -626,11 +620,10 @@ class Rest
     /**
      * Regenerate package maintainer info.
      */
-    public function savePackageMaintainer($package)
+    public function savePackageMaintainer($package): void
     {
         $pid = $this->packageRepository->find($package, 'id');
         $maintainers = $this->userRepository->findMaintainersByPackageId($pid);
-        $extra = '/rest/';
 
         if (count($maintainers)) {
             $pdir = $this->dir.'/p';
@@ -671,10 +664,9 @@ class Rest
     /**
      * Regenerate maintainer info.
      */
-    public function saveMaintainer($maintainer)
+    public function saveMaintainer($maintainer): void
     {
         $maintainer = $this->database->run('SELECT * FROM users WHERE handle = ?', [$maintainer])->fetch();
-        $extra = '/rest/';
         $mdir = $this->dir.'/m';
 
         if (!file_exists($mdir)) {
@@ -714,7 +706,7 @@ class Rest
     /**
      * Regenerate list of all maintainers.
      */
-    public function saveAllMaintainers()
+    public function saveAllMaintainers(): void
     {
         $maintainers = $this->userRepository->findAll();
 
@@ -742,7 +734,7 @@ class Rest
         @chmod($mdir.'/allmaintainers.xml', 0666);
     }
 
-    private function canSortReleasesByVersion(array $releases)
+    private function canSortReleasesByVersion(array $releases): bool
     {
         foreach ($releases as $release) {
             $version = $release['version'];
@@ -753,7 +745,7 @@ class Rest
         return true;
     }
 
-    private function sortReleasesByVersion(array $releases)
+    private function sortReleasesByVersion(array $releases): array
     {
         usort(
             $releases,
