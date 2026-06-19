@@ -28,20 +28,20 @@ class BorderBox
     /**
      * Class constructor
      */
-    public function __construct($title, $width = '90%', $indent = '', $cols = 1, $open = false) {
-        $this->title = $title;
-        $this->width = $width;
-        $this->indent = $indent;
-        $this->cols = $cols;
-        $this->open = $open;
-
+    public function __construct(
+        private string|array $title,
+        private string $width = '90%',
+        private string $indent = '',
+        private int $cols = 1,
+        private bool $open = false
+    ) {
         $this->start();
     }
 
     /**
      * Initialization of the bordered box.
      */
-    private function start()
+    private function start(): void
     {
         $title = $this->title;
         if (is_array($title)) {
@@ -69,7 +69,7 @@ class BorderBox
     /**
      * Table final parts.
      */
-    public function end()
+    public function end(): void
     {
         $i = $this->indent;
         if (!$this->open) {
@@ -86,7 +86,7 @@ class BorderBox
     /**
      * Table header.
      */
-    public function horizHeadRow($heading, ...$data)
+    public function horizHeadRow($heading, ...$data): void
     {
         $i = $this->indent;
         print "$i    <tr>\n";
@@ -107,7 +107,7 @@ class BorderBox
     /**
      * Table additional header used as a subheader.
      */
-    public function headRow(...$data)
+    public function headRow(...$data): void
     {
         $i = $this->indent;
         print "$i    <tr>\n";
@@ -127,7 +127,7 @@ class BorderBox
     /**
      * Table row with white background.
      */
-    public function plainRow(...$data)
+    public function plainRow(...$data): void
     {
         $i = $this->indent;
         print "$i    <tr>\n";
@@ -147,7 +147,7 @@ class BorderBox
     /**
      * Table row with background.
      */
-    public function fullRow($text)
+    public function fullRow($text): void
     {
         $i = $this->indent;
         print "$i    <tr>\n";

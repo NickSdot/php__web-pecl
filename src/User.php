@@ -35,7 +35,7 @@ class User
     /**
      * Get a note entity object.
      */
-    private static function getNote()
+    private static function getNote(): Note
     {
         global $database, $auth_user;
 
@@ -50,7 +50,7 @@ class User
     /**
      * Remove user.
      */
-    public static function remove($uid)
+    public static function remove($uid): bool
     {
         global $database, $rest;
 
@@ -67,7 +67,7 @@ class User
     /**
      * Reject pending request for user account.
      */
-    public static function rejectRequest($uid, $reason)
+    public static function rejectRequest($uid, $reason): true
     {
         global $database, $auth_user;
 
@@ -86,7 +86,7 @@ class User
     /**
      * Activate user account.
      */
-    public static function activate($uid)
+    public static function activate($uid): bool
     {
         global $database, $auth_user, $rest;
 
@@ -129,7 +129,7 @@ class User
     /**
      * Check if given username is administrator.
      */
-    public static function isAdmin($handle)
+    public static function isAdmin($handle): bool
     {
         global $database;
 
@@ -142,7 +142,7 @@ class User
     /**
      * Check if given username exists.
      */
-    public static function exists($handle)
+    public static function exists($handle): bool
     {
         global $database;
 
@@ -220,11 +220,8 @@ class User
 
     /**
      * Update user information
-     *
-     * @param  array User information
-     * @return object Instance of UserEntity
      */
-    public static function update($data)
+    public static function update(array $data): UserEntity
     {
         global $database;
 

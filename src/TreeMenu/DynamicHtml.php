@@ -82,6 +82,12 @@ class DynamicHtml extends Presentation
     var $noTopLevelImages;
 
     /**
+     * Maximum depth of indentation.
+     * @var int
+     */
+    var $maxDepth;
+
+    /**
      * Name of Jabbascript object to use
      * @var string
      */

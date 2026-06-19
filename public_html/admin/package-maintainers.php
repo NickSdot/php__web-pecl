@@ -208,7 +208,7 @@ if (empty($id)) {
     $bb->end();
 }
 
-function isAllowed($packageId, $userRepository)
+function isAllowed($packageId, $userRepository): bool
 {
     global $auth_user, $auth;
 

@@ -39,7 +39,7 @@ $category = $container->get(Category::class);
 /**
  * Function to recurse thru the tree adding nodes to treemenu
  */
-function parseTree($structure, $parent = null)
+function parseTree($structure, $parent = null): void
 {
     global $database;
 

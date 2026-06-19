@@ -31,13 +31,11 @@ use App\Database;
  */
 class User
 {
-    private $database;
-    public $handle;
-    public $passsword;
-    private $admin = false;
-    public $registered;
+    public ?string $password = null;
+    private bool $admin = false;
+    public bool $registered = false;
 
-    private $schema = [
+    private array $schema = [
         'handle',
         'password',
         'name',
@@ -59,18 +57,17 @@ class User
         'from_site',
     ];
 
-    private $values = [];
+    private array $values = [];
 
-    private $newValues = [];
+    private array $newValues = [];
 
     /**
      * Class constructor.
      */
-    public function __construct(Database $database, $handle)
-    {
-        $this->database = $database;
-        $this->handle = $handle;
-
+    public function __construct(
+        private readonly Database $database,
+        public $handle
+    ) {
         $row = $this->database->run("SELECT * FROM users WHERE handle = ?", [$this->handle])->fetch();
 
         if ($row) {
@@ -87,17 +84,17 @@ class User
     /**
      * Check if user's username matches.
      */
-    public function is($handle)
+    public function is($handle): bool
     {
-        return (strtolower($handle) == strtolower($this->handle));
+        return strtolower($handle) == strtolower($this->handle);
     }
 
     /**
      * Check if user is admin.
      */
-    public function isAdmin()
+    public function isAdmin(): bool
     {
-        return ($this->admin === true);
+        return $this->admin === true;
     }
 
     /**
@@ -117,13 +114,13 @@ class User
      */
     public function get($column)
     {
-        return isset($this->values[$column]) ? $this->values[$column] : null;
+        return $this->values[$column] ?? null;
     }
 
     /**
      * Is column valid.
      */
-    private function validateColumn($column)
+    private function validateColumn($column): bool
     {
         return in_array($column, $this->schema);
     }
