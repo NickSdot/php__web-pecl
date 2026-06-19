@@ -25,7 +25,7 @@ namespace App\Utils;
  */
 class Pagination
 {
-    const DEFAULT_ITEMS_PER_PAGE = 15;
+    private const int DEFAULT_ITEMS_PER_PAGE = 15;
     private $itemsPerPage;
     private $numberOfItems = 0;
     private $currentPage = 1;
@@ -39,17 +39,9 @@ class Pagination
     }
 
     /**
-     * Set how many items are visible per page.
-     */
-    public function setItemsPerPage($itemsPerPage)
-    {
-        $this->itemsPerPage = $itemsPerPage;
-    }
-
-    /**
      * Return current number of items set per page.
      */
-    public function getItemsPerPage()
+    public function getItemsPerPage(): int
     {
         return $this->itemsPerPage;
     }
@@ -57,7 +49,7 @@ class Pagination
     /**
      * Set total number of items.
      */
-    public function setNumberOfItems($count)
+    public function setNumberOfItems($count): void
     {
         $this->numberOfItems = $count;
     }
@@ -65,7 +57,7 @@ class Pagination
     /**
      * Current page to get results.
      */
-    public function setCurrentPage($page)
+    public function setCurrentPage($page): void
     {
         $this->currentPage = $page;
     }
@@ -73,7 +65,7 @@ class Pagination
     /**
      * First item in the displayed result set.
      */
-    public function getFrom()
+    public function getFrom(): float|int
     {
         $from = $this->currentPage * $this->itemsPerPage - $this->itemsPerPage + 1;
         if ($from > $this->numberOfItems) {
@@ -86,7 +78,7 @@ class Pagination
     /**
      * Last item in the displayed result set.
      */
-    public function getTo()
+    public function getTo(): float|int
     {
         $to = $this->currentPage * $this->itemsPerPage;
 
@@ -95,13 +87,5 @@ class Pagination
         }
 
         return $to;
-    }
-
-    /**
-     * Get total number of pages.
-     */
-    public function getNumberOfPages()
-    {
-        return ceil($this->numberOfItems / $this->itemsPerPage);
     }
 }
