@@ -20,8 +20,6 @@
 
 namespace App;
 
-use App\Database;
-
 /**
  * Class to manage the user permissions system
  *
@@ -29,19 +27,11 @@ use App\Database;
  * permission system, but it also allows us to set up a php.net-wide
  * single-sign-on system some time in the future.
  */
-class Karma
+readonly class Karma
 {
-    private $database;
-
-    /**
-     * Class constructor.
-     *
-     * @param object Instance of Database
-     */
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
+    public function __construct(
+        private Database $database
+    ) {}
 
     /**
      * Determine if the given user has karma for the given $level
@@ -56,50 +46,19 @@ class Karma
      *       defined in a separate database table "maintains". Todo: check if
      *       this will be ever utilized again, or this should be migrated to a
      *       common php.net accounts procedure using the main.php.net.
-     *
-     * @param  string Username
-     * @param  string Level
-     * @return boolean
      */
-    public function has($user, $level)
+    public function has(string $user, string $level): bool
     {
-        switch ($level) {
-            case 'pear.pepr':
-                $levels = ['pear.pepr', 'pear.user', 'pear.dev', 'pear.admin', 'pear.group'];
-            break;
-
-            case 'pear.pepr.admin':
-                $levels = ['pear.admin', 'pear.group', 'pear.pepr.admin'];
-            break;
-
-            case 'pear.user':
-                $levels = ['pear.user', 'pear.pepr', 'pear.dev', 'pear.admin', 'pear.group'];
-            break;
-
-            case 'pear.dev':
-                $levels = ['pear.dev', 'pear.admin', 'pear.group'];
-            break;
-
-            case 'pear.admin':
-                $levels = ['pear.admin', 'pear.group'];
-            break;
-
-            case 'pear.group':
-                $levels = ['pear.group'];
-            break;
-
-            case 'global.karma.manager':
-                $levels = ['pear.group'];
-            break;
-
-            case 'doc.chm-upload':
-                $levels = ['pear.doc.chm-upload', 'pear.group'];
-            break;
-
-            default:
-                $levels = [$level];
-            break;
-        }
+        $levels = match ($level) {
+            'pear.pepr' => [ 'pear.pepr', 'pear.user', 'pear.dev', 'pear.admin', 'pear.group' ],
+            'pear.pepr.admin' => [ 'pear.admin', 'pear.group', 'pear.pepr.admin' ],
+            'pear.user' => [ 'pear.user', 'pear.pepr', 'pear.dev', 'pear.admin', 'pear.group' ],
+            'pear.dev' => [ 'pear.dev', 'pear.admin', 'pear.group' ],
+            'pear.admin' => [ 'pear.admin', 'pear.group' ],
+            'global.karma.manager', 'pear.group' => [ 'pear.group' ],
+            'doc.chm-upload' => [ 'pear.doc.chm-upload', 'pear.group' ],
+            default => [ $level ],
+        };
 
         $placeholders = [];
         $arguments = [$user];
@@ -115,7 +74,7 @@ class Karma
                 AND level IN ('.implode(',', $placeholders).')
         ';
 
-        $results = $statement = $this->database->run($sql, $arguments)->fetchAll();
+        $results = $this->database->run($sql, $arguments)->fetchAll();
 
         return (count($results) > 0);
     }
