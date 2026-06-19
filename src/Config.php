@@ -28,37 +28,33 @@ use App\Utils\DsnConverter;
 class Config
 {
     /**
-     * @var array
-     */
-    private $values;
-
-    /**
      * Class constructor.
      */
-    public function __construct(array $values)
-    {
-        $this->values = $values;
-
+    public function __construct(
+        private array $values
+    ) {
         $this->mapDsn();
     }
 
     /**
      * Map DSN string to database configuration if it has been defined. String
-     * db_dsn 'mysqli://user:password@host/database is mapped to db_*
+     * db_dsn "mysqli://user:password@host/database" is mapped to db_*
      * configuration values.
      */
-    private function mapDsn()
+    private function mapDsn(): void
     {
-        if (!empty($this->values['db_dsn'])) {
-            $dsnConverter = new DsnConverter();
-
-            $array = $dsnConverter->toArray($this->values['db_dsn']);
-
-            $this->values['db_username'] = $array['username'];
-            $this->values['db_password'] = $array['password'];
-            $this->values['db_host'] = $array['host'];
-            $this->values['db_name'] = $array['database'];
+        if (empty($this->values['db_dsn'])) {
+            return;
         }
+
+        $dsnConverter = new DsnConverter();
+
+        $array = $dsnConverter->toArray($this->values['db_dsn']);
+
+        $this->values['db_username'] = $array['username'];
+        $this->values['db_password'] = $array['password'];
+        $this->values['db_host'] = $array['host'];
+        $this->values['db_name'] = $array['database'];
     }
 
     /**
@@ -66,6 +62,6 @@ class Config
      */
     public function get($key)
     {
-        return isset($this->values[$key]) ? $this->values[$key] : '';
+        return $this->values[$key] ?? '';
     }
 }
