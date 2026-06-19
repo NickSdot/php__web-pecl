@@ -24,11 +24,11 @@
 
 namespace App\Entity;
 
-use App\Entity\Package;
 use App\User as BaseUser;
 use App\Database;
 use App\Rest;
 use App\Repository\UserRepository;
+use PDOStatement;
 use \PEAR as PEAR;
 
 /**
@@ -36,21 +36,21 @@ use \PEAR as PEAR;
  */
 class Maintainer
 {
-    private $database;
-    private $rest;
+    private Database $database;
+    private Rest $rest;
     private $authUser;
-    private $package;
+    private Package $package;
 
     /**
      * In database these are defined as enum type. Additionally there is
      * a contributor role available which isn't used in the PECL application.
      */
-    const ROLES = ['lead', 'developer', 'contributor', 'helper'];
+    const array ROLES = ['lead', 'developer', 'contributor', 'helper'];
 
     /**
      * Set database handler.
      */
-    public function setDatabase(Database $database)
+    public function setDatabase(Database $database): void
     {
         $this->database = $database;
     }
@@ -58,7 +58,7 @@ class Maintainer
     /**
      * Set rest generator.
      */
-    public function setRest(Rest $rest)
+    public function setRest(Rest $rest): void
     {
         $this->rest = $rest;
     }
@@ -66,7 +66,7 @@ class Maintainer
     /**
      * Set auth user.
      */
-    public function setAuthUser($authUser)
+    public function setAuthUser($authUser): void
     {
         $this->authUser = $authUser;
     }
@@ -74,7 +74,7 @@ class Maintainer
     /**
      * Set package entity.
      */
-    public function setPackage(Package $package)
+    public function setPackage(Package $package): void
     {
         $this->package = $package;
     }
@@ -82,10 +82,10 @@ class Maintainer
     /**
      * Add new maintainer
      *
-     * @param  mixed  Name of the package or it's ID
-     * @param  string Handle of the user
-     * @param  string Role of the user
-     * @param  integer Is the developer actively working on the project?
+     * @param  mixed  $package Name of the package or it's ID
+     * @param  string $user Handle of the user
+     * @param  string $role Role of the user
+     * @param  int $active Is the developer actively working on the project?
      * @return mixed True or PEAR error object
      */
     public function add($package, $user, $role, $active = 1)
@@ -114,10 +114,9 @@ class Maintainer
     /**
      * Check if role is valid
      *
-     * @param string Name of the role
-     * @return boolean
+     * @param string $role Name of the role
      */
-    private function isValidRole($role)
+    private function isValidRole($role): bool
     {
         return in_array($role, self::ROLES);
     }
@@ -125,8 +124,8 @@ class Maintainer
     /**
      * Remove user from package
      *
-     * @param  mixed Name of the package or it's ID
-     * @param  string Handle of the user
+     * @param  mixed $package Name of the package or it's ID
+     * @param  string $user Handle of the user
      * @return True or PEAR error object
      */
     private function remove($package, $user)
@@ -231,12 +230,12 @@ class Maintainer
     /**
      * Update maintainer entry
      *
-     * @param  int Package ID
-     * @param  string Username
-     * @param  string Role
-     * @param  string Is the developer actively working on the package?
+     * @param  int $package Package ID
+     * @param  string $user Username
+     * @param  string $role Role
+     * @param  string $active Is the developer actively working on the package?
      */
-    public function update($package, $user, $role, $active)
+    public function update($package, $user, $role, $active): false|PDOStatement
     {
         $sql = 'UPDATE maintains SET role = ?, active = ? WHERE package = ? AND handle = ?';
 
@@ -246,10 +245,10 @@ class Maintainer
     /**
      * Checks if the current user is allowed to update the maintainer data
      *
-     * @param  int  ID of the package
-     * @return boolean
+     * @param  int $package ID of the package
+     * @return bool
      */
-    private function mayUpdate($package)
+    private function mayUpdate($package): bool
     {
         $admin = $this->authUser->isAdmin();
 
