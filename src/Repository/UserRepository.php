@@ -21,24 +21,19 @@
 namespace App\Repository;
 
 use App\Database;
+use PDO;
 
 /**
  * Repository class for retrieving user table data.
  */
-class UserRepository
+readonly class UserRepository
 {
-    /**
-     * Database handle.
-     */
-    private $database;
-
     /**
      * Class constructor.
      */
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
+    public function __construct(
+        private Database $database
+    ) {}
 
     /**
      * Get registered (active) user by given username.
@@ -73,7 +68,7 @@ class UserRepository
     /**
      * Get all active users. Active users have registered table set to 1.
      */
-    public function findAll()
+    public function findAll(): array
     {
         $sql = "SELECT * FROM users WHERE registered = 1 ORDER BY handle";
 
@@ -93,16 +88,15 @@ class UserRepository
 
         $result = $statement->fetch();
 
-        return isset($result['wishlist']) ? $result['wishlist'] : null;
+        return $result['wishlist'] ?? null;
     }
 
     /**
      * Get maintainer(s) for package
      *
-     * @param  int Package id
-     * @return array
+     * @param int $packageId
      */
-    public function findMaintainersByPackageId($packageId)
+    public function findMaintainersByPackageId($packageId): array
     {
         $sql = "SELECT u.handle, u.name, u.email, u.showemail, u.wishlist, m.role, m.active
                 FROM maintains m, users u
@@ -123,7 +117,7 @@ class UserRepository
     /**
      * Get all lead maintainers by package id.
      */
-    public function findLeadMaintainersByPackage($package)
+    public function findLeadMaintainersByPackage($package): array
     {
         $sql = "SELECT handle, role, active
                 FROM maintains
@@ -143,7 +137,7 @@ class UserRepository
     /**
      * Get all first letters of user handles.
      */
-    public function getFirstLetters()
+    public function getFirstLetters(): array
     {
         $sql = "SELECT SUBSTRING(handle, 1, 1)
                 FROM users
@@ -151,7 +145,7 @@ class UserRepository
                 ORDER BY handle
         ";
 
-        return $this->database->run($sql)->fetchAll(\PDO::FETCH_COLUMN);
+        return $this->database->run($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
 
     /**
@@ -167,7 +161,7 @@ class UserRepository
     /**
      * Find all users by given offset and limit.
      */
-    public function findAllUsersByOffset($limit, $offset)
+    public function findAllUsersByOffset($limit, $offset): array
     {
         $sql = "SELECT handle, name, email, homepage, showemail
                 FROM users
@@ -187,7 +181,7 @@ class UserRepository
     /**
      * Finds all package maintainers.
      */
-    public function findAllMaintainers()
+    public function findAllMaintainers(): array
     {
         $sql = "SELECT u.handle, u.name
                 FROM users u, maintains m
