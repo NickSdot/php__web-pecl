@@ -30,7 +30,7 @@ class Licenser
     /**
      * Returns a link to license by its name.
      */
-    public function getUrl($license)
+    public function getUrl($license): string
     {
         switch ($license) {
             case 'PHP License':
@@ -38,19 +38,15 @@ class Licenser
             case 'PHP License 3.01':
             case 'PHP':
                 return 'https://php.net/license/3_01.txt';
-            break;
             case 'PHP 3.0':
             case 'PHP License 3.0':
                 return 'https://php.net/license/3_0.txt';
-            break;
             case 'PHP 2.02':
             case 'PHP License 2.02':
                 return 'https://php.net/license/2_02.txt';
-            break;
             case 'LGPL':
             case 'GNU Lesser General Public License':
                 return 'https://www.gnu.org/licenses/lgpl.html';
-            break;
         }
 
         return '';
@@ -59,7 +55,7 @@ class Licenser
     /**
      * Get possible HTML anchor element from the given license name.
      */
-    public function getHtml($license = '')
+    public function getHtml($license = ''): string
     {
         $url = $this->getUrl($license);
 
