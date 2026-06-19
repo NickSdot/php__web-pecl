@@ -21,6 +21,11 @@
 
 /**
  * Main command line interface console entry application.
+ *
+ * @var \App\Database $database
+ * @var \App\Config $config
+ * @var \App\Container\Container $container
+ * @var \App\Entity\Package $packageEntity
  */
 
 require_once __DIR__.'/../include/bootstrap.php';
@@ -37,7 +42,13 @@ $generateFixturesCommand = new GenerateFixturesCommand();
 $generateFixturesCommand->setDatabase($database);
 $generateFixturesCommand->setConfig($config);
 
-$fixtures = new AppFixtures($database, Factory::create(), $container->get(Category::class), $packageEntity);
+$fixtures = new AppFixtures(
+    $database,
+    Factory::create(),
+    $container->get(Category::class),
+    $packageEntity
+);
+
 $generateFixturesCommand->setFixtures($fixtures);
 
 $application->addCommand($generateFixturesCommand);
