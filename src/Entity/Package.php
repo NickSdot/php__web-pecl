@@ -25,7 +25,6 @@
 namespace App\Entity;
 
 use App\Database;
-use App\Entity\Maintainer;
 use App\Rest;
 use App\User;
 use \PEAR as PEAR;
@@ -35,13 +34,13 @@ use \PEAR as PEAR;
  */
 class Package
 {
-    private $database;
-    private $rest;
+    private Database $database;
+    private Rest $rest;
 
     /**
      * Set database handler.
      */
-    public function setDatabase(Database $database)
+    public function setDatabase(Database $database): void
     {
         $this->database = $database;
     }
@@ -49,7 +48,7 @@ class Package
     /**
      * Set REST generator.
      */
-    public function setRest(Rest $rest)
+    public function setRest(Rest $rest): void
     {
         $this->rest = $rest;
     }
@@ -57,22 +56,22 @@ class Package
     /**
      * Add new package
      *
-     * @param array
+     * @param array $data
      * @return mixed ID of new package or PEAR error object
      */
     public function add($data)
     {
         global $auth_user;
 
-        $name = isset($data['name']) ? $data['name'] : null;
-        $category = isset($data['category']) ? $data['category'] : null;
-        $license = isset($data['license']) ? $data['license'] : null;
-        $summary = isset($data['summary']) ? $data['summary'] : null;
-        $description = isset($data['description']) ? $data['description'] : null;
-        $lead = isset($data['lead']) ? $data['lead'] : null;
-        $type = isset($data['type']) ? $data['type'] : null;
-        $homepage = isset($data['homepage']) ? $data['homepage'] : null;
-        $cvs_link = isset($data['cvs_link']) ? $data['cvs_link'] : null;
+        $name = $data['name'] ?? null;
+        $category = $data['category'] ?? null;
+        $license = $data['license'] ?? null;
+        $summary = $data['summary'] ?? null;
+        $description = $data['description'] ?? null;
+        $lead = $data['lead'] ?? null;
+        $type = $data['type'] ?? null;
+        $homepage = $data['homepage'] ?? null;
+        $cvs_link = $data['cvs_link'] ?? null;
 
         if (empty($license)) {
             $license = "PHP License";
@@ -136,8 +135,8 @@ class Package
      * releases, notes, category, description, authors, categoryid, packageid,
      * authors.
      *
-     * @param  mixed   Name of the package or it's ID
-     * @param  string  Single field to fetch
+     * @param  mixed $pkg  Name of the package or it's ID
+     * @param  string|null $field  Single field to fetch
      * @return mixed
      */
     public function info($pkg, $field = null)
@@ -172,7 +171,7 @@ class Package
         $notes_sql = "SELECT id, nby, ntime, note FROM notes WHERE pid = ?";
         $deps_sql = "SELECT type, relation, version, `name`, `release`, optional
                      FROM deps
-                     WHERE `package` = ? ORDER BY `optional` ASC";
+                     WHERE `package` = ? ORDER BY `optional`";
 
         if ($field === null) {
             $info = $this->database->run($pkg_sql, [$pkg])->fetch();
@@ -278,7 +277,7 @@ class Package
             return PEAR::raiseError("Package not registered. Please register it first with \"New Package\"");
         }
 
-        if ($auth_user->isAdmin() == false) {
+        if ($auth_user->isAdmin() === false) {
             $role = User::maintains($auth_user->handle, $package_id);
             if ($role != 'lead' && $role != 'developer') {
                 return PEAR::raiseError('Package::updateInfo: insufficient privileges');
@@ -312,10 +311,10 @@ class Package
     /**
      * Determines if the given package is valid
      *
-     * @param  string Name of the package
-     * @return  boolean
+     * @param  string $package Name of the package
+     * @return  bool
      */
-    public function isValid($package)
+    public function isValid($package): bool
     {
         $sql = "SELECT id FROM packages WHERE package_type = 'pecl' AND approved = 1 AND name = ?";
         $results = $this->database->run($sql, [$package])->fetchAll();
@@ -326,10 +325,10 @@ class Package
     /**
      * Get all notes for given package
      *
-     * @param  int ID of the package
+     * @param  int $package ID of the package
      * @return array
      */
-    public function getNotes($package)
+    public function getNotes($package): array
     {
         $sql = 'SELECT * FROM notes WHERE pid = ? ORDER BY ntime';
 
