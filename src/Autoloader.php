@@ -70,15 +70,15 @@ class Autoloader
      * An associative array with namespace prefixes as keys and values of arrays
      * of base directories for classes in that namespace.
      */
-    protected $prefixes = [];
+    protected array $prefixes = [];
 
     /**
      * An associative array of classes as keys and their paths as values.
      */
-    protected $classmap = [];
+    protected array $classmap = [];
 
     /**
-     * Class constructor that registers loader with a SPL autoloader stack.
+     * Class constructor that registers loader with an SPL autoloader stack.
      */
     public function __construct()
     {
@@ -88,14 +88,13 @@ class Autoloader
     /**
      * Adds a base directory for a namespace prefix.
      *
-     * @param string $prefix The namespace prefix.
-     * @param string $baseDir A base directory for class files in the
-     * namespace.
-     * @param bool $prepend If true, prepend the base directory to the stack
+     * @param string $prefix  The namespace prefix.
+     * @param string $baseDir A base directory for class files in the namespace.
+     * @param bool $prepend   If true, prepend the base directory to the stack
      * instead of appending it; this causes it to be searched first rather
      * than last.
      */
-    public function addNamespace($prefix, $baseDir, $prepend = false)
+    public function addNamespace(string $prefix, string $baseDir, bool $prepend = false): void
     {
         // normalize namespace prefix
         $prefix = trim($prefix, '\\') . '\\';
@@ -112,7 +111,7 @@ class Autoloader
         if ($prepend) {
             array_unshift($this->prefixes[$prefix], $baseDir);
         } else {
-            array_push($this->prefixes[$prefix], $baseDir);
+            $this->prefixes[$prefix][] = $baseDir;
         }
     }
 
@@ -120,7 +119,7 @@ class Autoloader
      * Add a classmap. Classmap is a simplistic imitation of the Composer's
      * classmap autoloading.
      */
-    public function addClassmap($class, $path)
+    public function addClassmap($class, $path): void
     {
         $this->classmap[$class] = $path;
     }
@@ -129,10 +128,11 @@ class Autoloader
      * Loads the class file for a given class name.
      *
      * @param string $class The fully-qualified class name.
-     * @return mixed The mapped file name on success, or boolean false on
+     *
+     * @return string|bool The mapped file name on success, or boolean false on
      * failure.
      */
-    public function load($class)
+    public function load(string $class): string|bool
     {
         // the current namespace prefix
         $prefix = $class;
@@ -170,12 +170,13 @@ class Autoloader
     /**
      * Load the mapped file for a namespace prefix and relative class.
      *
-     * @param string $prefix The namespace prefix.
+     * @param string $prefix        The namespace prefix.
      * @param string $relativeClass The relative class name.
-     * @return mixed Boolean false if no mapped file can be loaded, or the
+     *
+     * @return string|false Boolean false if no mapped file can be loaded, or the
      * name of the mapped file that was loaded.
      */
-    protected function loadMappedFile($prefix, $relativeClass)
+    protected function loadMappedFile(string $prefix, string $relativeClass): string|false
     {
         // are there any base directories for this namespace prefix?
         if (isset($this->prefixes[$prefix]) === false) {
@@ -205,9 +206,10 @@ class Autoloader
      * If a file exists, require it from the file system.
      *
      * @param string $file The file to require.
+     *
      * @return bool True if the file exists, false if not.
      */
-    protected function requireFile($file)
+    protected function requireFile(string $file): bool
     {
         if (file_exists($file)) {
             require_once $file;

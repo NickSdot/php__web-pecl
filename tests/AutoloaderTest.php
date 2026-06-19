@@ -26,14 +26,14 @@ use PHPUnit\Framework\TestCase;
 
 class MockAutoloader extends Autoloader
 {
-    protected $files = [];
+    protected array $files = [];
 
-    public function setFiles(array $files)
+    public function setFiles(array $files): void
     {
         $this->files = $files;
     }
 
-    protected function requireFile($file)
+    protected function requireFile(string $file): bool
     {
         return in_array($file, $this->files);
     }
@@ -41,7 +41,7 @@ class MockAutoloader extends Autoloader
 
 class AutoloaderTest extends TestCase
 {
-    protected $autoloader;
+    protected MockAutoloader $autoloader;
 
     protected function setUp(): void
     {
